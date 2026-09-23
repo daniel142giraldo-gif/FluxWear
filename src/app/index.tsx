@@ -1,95 +1,88 @@
 import { useState } from "react";
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
-} from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { router } from 'expo-router';
+import { router } from "expo-router";
 
 export default function Formulario() {
   const [correo, setCorreo] = useState("");
   const [contraseña, setContraseña] = useState("");
 
   return (
-    <>
-      <View style={styles.Fondo}>
-        <View style={styles.CajaForm}>
+    <View style={styles.Fondo}>
+      <View style={styles.CajaForm}>
+        <View>
+          <Text>imagen</Text>
+        </View>
+
+        <View style={styles.CajaTitulo}>
+          <Text style={styles.Titulo}>FluxWear</Text>
+        </View>
+
+        <View>
+          <Text style={styles.SubTitulo}>Step into the future of fashion.</Text>
+        </View>
+
+        <View style={styles.Formulario}>
+          <View style={styles.Correo}>
+            <Text style={styles.label}>CORREO ELECTRONICO</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Ingresa tu correo"
+              value={correo}
+              onChangeText={setCorreo}
+            />
+          </View>
+
+          <View style={styles.Contra}>
+            <Text style={styles.label}>CONTRASEÑA</Text>
+
+            <Pressable style={styles.Boton1}>
+              <Text style={styles.Recuperar}>¿Olvidaste tu contraseña?</Text>
+            </Pressable>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Ingresa tu contraseña"
+              value={contraseña}
+              onChangeText={setContraseña}
+              secureTextEntry
+            />
+          </View>
+
+          <View style={styles.Botones}>
+            <Pressable style={styles.Boton}>
+              <Text>Iniciar sesion</Text>
+            </Pressable>
+          </View>
+
           <View>
-            <Text>imagen</Text>
+            <Text style={styles.Texto}>O INICIA SESION CON</Text>
           </View>
-    
-          <View style={styles.CajaTitulo}>
-            <Text style={styles.Titulo}>FluxWear</Text>
+
+          <View style={styles.BotonesP}>
+            <Pressable style={styles.Boton3}>
+              <Text style={styles.TextoS}>Google</Text>
+            </Pressable>
+
+            <Pressable style={styles.Boton3}>
+              <Text style={styles.TextoS}>Apple</Text>
+            </Pressable>
           </View>
-    
+
           <View>
-            <Text style={styles.SubTitulo}>Step into the future of fashion.</Text>
-          </View>
-    
-          <View style={styles.Formulario}>
-            <View style={styles.Correo}>
-              <Text style={styles.label}>CORREO ELECTRONICO</Text>
-    
-              <TextInput
-                style={styles.input}
-                placeholder="Ingresa tu correo"
-                value={correo}
-                onChangeText={setCorreo}
-              />
-            </View>
-    
-            <View style={styles.Contra}>
-              <Text style={styles.label}>CONTRASEÑA</Text>
-    
-              <Pressable style={styles.Boton1}>
-                <Text>¿Olvidaste tu contraseña?</Text>
-              </Pressable>
-    
-              <TextInput
-                style={styles.input}
-                placeholder="Ingresa tu contraseña"
-                value={contraseña}
-                onChangeText={setContraseña}
-                secureTextEntry
-              />
-            </View>
-    
-            <View style={styles.Botones}>
-              <Pressable style={styles.Boton}>
-                <Text>Iniciar sesion</Text>
-              </Pressable>
-            </View>
-    
-            <View>
-              <Text style={styles.Texto}>O INICIA SESION CON</Text>
-            </View>
-    
-            <View style={styles.BotonesP}>
-              <Pressable style={styles.Boton3}>
-                <Text style={styles.TextoS}>Google</Text>
-              </Pressable>
-    
-              <Pressable style={styles.Boton3}>
-                <Text style={styles.TextoS}>Apple</Text>
-              </Pressable>
-            </View>
-    
-            <View>
-              <Text style={styles.Nuevo}>Nuevo en FluxWear</Text>
-    
-              <Pressable 
-                style={styles.Boton2}
-                onPress={() => router.push("/Registro")}>
-                  <Text style={styles.textoCrear}>Crear Cuenta</Text>
-              </Pressable>
-            </View>
+            <Text style={styles.Nuevo}>Nuevo en FluxWear</Text>
+
+            <Pressable
+              style={styles.Boton2}
+              onPress={() => router.push("/Registro")}
+            >
+              <Text style={styles.textoCrear}>Crear Cuenta</Text>
+            </Pressable>
           </View>
         </View>
       </View>
-    </>
+    </View>
   );
 }
 
@@ -99,7 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#030A16",
   },
   CajaForm: {
-    height: '75%',
+    height: "75%",
     width: "90%",
     backgroundColor: "rgba(6, 20, 39, 0.88)",
     borderRadius: 24,
@@ -108,11 +101,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
-    marginLeft: '5%',
+    marginLeft: "5%",
   },
   CajaTitulo: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   Titulo: {
     fontSize: 28,
@@ -129,12 +122,8 @@ const styles = StyleSheet.create({
   Formulario: {
     width: "100%",
   },
-  Correo: {
-    
-  },
-  Contra: {
-    
-  },
+  Correo: {},
+  Contra: {},
   label: {
     fontSize: 11,
     fontWeight: "700",
@@ -147,9 +136,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 14,
   },
-  Botones: {
-    
-  },
+  Botones: {},
   BotonesP: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -157,7 +144,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   Boton: {
-    backgroundColor: "#00d2ff",
+    backgroundColor: "#00C3FF",
     borderRadius: 25,
     height: 50,
     flexDirection: "row",
@@ -172,9 +159,11 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   Boton1: {
-    fontSize: 12,
-    color: "#00d2ff",
     marginBottom: 8,
+  },
+  Recuperar: {
+    color: "#00C3FF",
+    fontSize: 12,
   },
   Nuevo: {
     color: "#94A3B8",
