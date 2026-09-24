@@ -1,6 +1,15 @@
+import { useRouter } from "expo-router";
+import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
+import { useUsuarios } from '../context/UsuarioContext';
+
 export default function Registro() {
+
+  const router = useRouter();
+
+  const {usuarios, setUsuarios} = useUsuarios();
+  const [acepta, setAcepta] = useState(false)
 
   const [nuevoUsuario, setNuevoUsuario] = useState(
     {
@@ -47,6 +56,20 @@ export default function Registro() {
         return; 
     }
 
+    if (nuevoUsuario.confirmarPassword.trim() === "")
+      {
+        alert("Ingresar contraseña")
+  
+        return; 
+    }
+
+    if (nuevoUsuario.password !== nuevoUsuario.confirmarPassword)
+      {
+        alert("Las contraseñas no coinciden")
+  
+        return; 
+    }
+
     if (nuevoUsuario.telefono.trim() === "")
       {
         alert("Ingresar telefono")
@@ -54,14 +77,16 @@ export default function Registro() {
         return; 
     }
       
-    if (nuevoUsuario.edad.trim() === "")
+    if (nuevoUsuario.edad.length === 0)
       {
         alert("Ingresar la edad")
   
         return; 
     }
 
-    if(nuevoUsuario.edad < 1 || nuevoUsuario.edad >= 100) {
+    const edad = Number(nuevoUsuario.edad)
+
+    if(edad < 1 || edad > 100) {
         alert("La edad debe estar entre 1 y 100")
         return;
     }
@@ -80,10 +105,25 @@ export default function Registro() {
         return; 
     }
 
-    setNuevoUsuario({
-      ...UsuarioContext.Provider,
-      nuevoUsuario
-    })
+    if (!acepta) {
+      alert("Debes aceptar los términos y condiciones");
+      return;
+    }
+
+    const usuario = {
+      ...nuevoUsuario,
+      edad: edad,
+      peso: Number(nuevoUsuario.peso),
+      estatura: Number(nuevoUsuario.estatura),
+    };
+
+    setUsuarios([
+      ...usuarios,
+      usuario
+    ])
+
+    router.push("/");
+}
 
 
   return (
@@ -192,7 +232,7 @@ export default function Registro() {
 
       <Text style={styles.Registrado}></Text>
 
-      <Pressable style={styles.Boton} onPress={() => router.push("/index")}>
+      <Pressable style={styles.Boton} onPress={() => router.push("/")}>
         <Text>Iniciar Sesion</Text>
       </Pressable>
     </View>
@@ -204,7 +244,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#030A16",
   },
-  CajaForm: {
+  CrearCuenta: {
+    
+  },
+  Logo: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  TituloPrincipal: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#00d2ff",
+    letterSpacing: 0.5,
+  },
+  Contenedor: {
     height: "75%",
     width: "90%",
     backgroundColor: "rgba(6, 20, 39, 0.88)",
@@ -216,27 +269,15 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: "5%",
   },
-  CajaTitulo: {
-    justifyContent: "center",
-    alignItems: "center",
+  ImagenDatos: {
+    
   },
-  Titulo: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#00d2ff",
-    letterSpacing: 0.5,
+  TituloDatos: {
+
   },
-  SubTitulo: {
-    fontSize: 14,
-    color: "#94A3B8",
-    marginTop: 4,
-    marginBottom: 24,
+  Form: {
+
   },
-  Formulario: {
-    width: "100%",
-  },
-  Correo: {},
-  Contra: {},
   label: {
     fontSize: 11,
     fontWeight: "700",
@@ -249,12 +290,11 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 14,
   },
-  Botones: {},
-  BotonesP: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
-    marginBottom: 24,
+  BotonPrincipal: {
+
+  },
+  Registrado: {
+    
   },
   Boton: {
     backgroundColor: "#00C3FF",
@@ -270,48 +310,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 8,
     elevation: 6,
-  },
-  Boton1: {
-    marginBottom: 8,
-  },
-  Recuperar: {
-    color: "#00C3FF",
-    fontSize: 12,
-  },
-  Nuevo: {
-    color: "#94A3B8",
-    fontSize: 13,
-  },
-  Texto: {
-    color: "#64748B",
-    fontSize: 10,
-    fontWeight: "700",
-    letterSpacing: 0.8,
-    paddingHorizontal: 10,
-  },
-  TextoS: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  textoCrear: {
-    color: "#00d2ff",
-  },
-  Boton3: {
-    flex: 1,
-    flexDirection: "row",
-    backgroundColor: "#0B192C",
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "#1E293B",
-    height: 48,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  Boton2: {
-    flex: 1,
-    height: 48,
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

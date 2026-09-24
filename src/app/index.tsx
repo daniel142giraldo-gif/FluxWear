@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { router } from "expo-router";
 
-export default function Formulario() {
+export default function Login() {
   const [correo, setCorreo] = useState("");
   const [contraseña, setContraseña] = useState("");
 
