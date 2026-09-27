@@ -15,15 +15,23 @@ type Usuario = {
 type UsuariosContextType = {
   usuarios: Usuario[];
   setUsuarios: React.Dispatch<React.SetStateAction<Usuario[]>>;
+  usuarioActual: Usuario | null;
+  setUsuarioActual: React.Dispatch<React.SetStateAction<Usuario | null>>;
 };
+
 
 const UsuariosContext = createContext<UsuariosContextType | null>(null);
 
 export function UsuariosProvider({ children }: { children: ReactNode }) {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [usuarioActual, setUsuarioActual] = useState<Usuario | null>(null);
 
   return (
-    <UsuariosContext.Provider value={{ usuarios, setUsuarios }}>
+    <UsuariosContext.Provider value={{ 
+      usuarios, 
+      setUsuarios,
+      usuarioActual,
+      setUsuarioActual }}>
       {children}
     </UsuariosContext.Provider>
   );

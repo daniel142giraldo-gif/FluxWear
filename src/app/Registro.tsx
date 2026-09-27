@@ -1,6 +1,13 @@
 import { useRouter } from "expo-router";
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
+} from "react-native";
+
 
 import { useUsuarios } from '../context/UsuarioContext';
 
@@ -128,121 +135,130 @@ export default function Registro() {
 
   return (
     <View style={styles.Fondo}>
-
-      <Text  style={styles.CrearCuenta}>Crear Cuenta</Text>
-      <View style={styles.Logo}>
-
-      </View>
-      <Text style={styles.TituloPrincipal}>FluxWear</Text>
-
-      <View style={styles.Contenedor}>
-        <View style={styles.ImagenDatos}>
-
+      <View style={styles.ContenedorForm}>
+  
+        <Text  style={styles.CrearCuenta}>Crear Cuenta</Text>
+        <View style={styles.Logo}>
+  
         </View>
-        <Text style={styles.TituloDatos}>Datos personales</Text>
-
-        <View style={styles.Form}>  
+        <Text style={styles.TituloPrincipal}>FluxWear</Text>
   
-          <Text style={styles.label}>Nombre</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Ingresa tu nombre completo"
-            value={nuevoUsuario.nombre}
-            onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, nombre: text })}
-          />
+        <View style={styles.Contenedor}>
+          <View style={styles.ImagenDatos}>
   
-          <Text style={styles.label}>Correo Electronico</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Ingrese su nombre de usuario"
-            value={nuevoUsuario.nombre_usuario}
-            onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, nombre_usuario: text })}
-          />
+          </View>
+          <Text style={styles.TituloDatos}>Datos personales</Text>
   
-          <Text style={styles.label}>Correo Electronico</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="correo@example.com"
-            value={nuevoUsuario.correo}
-            onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, correo: text })}
-          />
-  
-          <Text style={styles.label}>Telefono</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Ingresa tu numero de telefono"
-            value={nuevoUsuario.telefono}
-            onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, telefono: text })}
-          />
+          <View style={styles.Form}>  
     
-          <Text style={styles.label}>Edad</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Ingresa tu edad"
-            value={nuevoUsuario.edad}
-            onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, edad: text })}
-          />
-  
-          <Text style={styles.label}>Peso</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Ingresa tu peso"
-            value={nuevoUsuario.peso}
-            onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, peso: text })}
-          />
+            <Text style={styles.label}>Nombre</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Ingresa tu nombre completo"
+              value={nuevoUsuario.nombre}
+              onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, nombre: text })}
+            />
     
-          <Text style={styles.label}>Estatura</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Ingresa tu estatura"
-            value={nuevoUsuario.estatura}
-            onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, estatura: text })}
-          />
-  
-          <Text style={styles.label}>Contraseña</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Ingresa tu contraseña"
-            value={nuevoUsuario.password}
-            onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, password: text })}
-          />
+            <Text style={styles.label}>Nombre de usuario</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Ingrese su nombre de usuario"
+              value={nuevoUsuario.nombre_usuario}
+              onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, nombre_usuario: text })}
+            />
     
-          <Text style={styles.label}>Confirmar contraseña</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Ingresa tu contraseña nuevamente"
-            value={nuevoUsuario.confirmarPassword}
-            onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, confirmarPassword: text })}
-          />
-  
-          <Pressable onPress={() => setAcepta(!acepta)}>
-            <View>
-              <Text>{acepta ? '☑' : '☐'}</Text>
-              <Text>Acepto los términos y condiciones</Text>
-            </View>
-         </Pressable>
-  
-         <Text>Al crear una cuenta, aceptas nuestros Términos y Condiciones y la Política de Privacidad de FluxWear.</Text>
+            <Text style={styles.label}>Correo Electronico</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="correo@example.com"
+              value={nuevoUsuario.correo}
+              onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, correo: text })}
+            />
+    
+            <Text style={styles.label}>Telefono</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Ingresa tu numero de telefono"
+              value={nuevoUsuario.telefono}
+              onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, telefono: text })}
+            />
+      
+            <Text style={styles.label}>Edad</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Ingresa tu edad"
+              value={nuevoUsuario.edad}
+              onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, edad: text })}
+            />
+    
+            <Text style={styles.label}>Peso</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Ingresa tu peso"
+              value={nuevoUsuario.peso}
+              onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, peso: text })}
+            />
+      
+            <Text style={styles.label}>Estatura</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Ingresa tu estatura"
+              value={nuevoUsuario.estatura}
+              onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, estatura: text })}
+            />
+    
+            <Text style={styles.label}>Contraseña</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Ingresa tu contraseña"
+              value={nuevoUsuario.password}
+              onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, password: text })}
+            />
+      
+            <Text style={styles.label}>Confirmar contraseña</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Ingresa tu contraseña nuevamente"
+              value={nuevoUsuario.confirmarPassword}
+              onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, confirmarPassword: text })}
+            />
+    
+            <Pressable 
+              style={styles.BotonAcepta}
+              onPress={() => setAcepta(!acepta)}>
+              <View>
+                <Text>{acepta ? '☑' : '☐'}</Text>
+                <Text>Acepto los términos y condiciones</Text>
+              </View>
+           </Pressable>
+    
+           <Text>Al crear una cuenta, aceptas nuestros Términos y Condiciones y la Política de Privacidad de FluxWear.</Text>
+          </View>
         </View>
+  
+        <Pressable style={styles.BotonPrincipal} onPress={registrar}>
+          <Text>Crear mi Cuenta</Text>
+        </Pressable>
+  
+        <Text style={styles.Registrado}></Text>
+  
+        <Pressable style={styles.Boton} onPress={() => router.push("/")}>
+          <Text>Iniciar Sesion</Text>
+        </Pressable>
       </View>
-
-      <Pressable style={styles.BotonPrincipal} onPress={registrar}>
-        <Text>Crear mi Cuenta</Text>
-      </Pressable>
-
-      <Text style={styles.Registrado}></Text>
-
-      <Pressable style={styles.Boton} onPress={() => router.push("/")}>
-        <Text>Iniciar Sesion</Text>
-      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  
   Fondo: {
-    flex: 1,
     backgroundColor: "#030A16",
+  },
+  ContenedorForm: {
+    backgroundColor: "#030A16",
+    height: 700,
+    width: "95%",
   },
   CrearCuenta: {
     
@@ -291,12 +307,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   BotonPrincipal: {
-
-  },
-  Registrado: {
-    
-  },
-  Boton: {
     backgroundColor: "#00C3FF",
     borderRadius: 25,
     height: 50,
@@ -310,5 +320,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 8,
     elevation: 6,
+  },
+  Registrado: {
+    
+  },
+  Boton: {
+    
+  },
+  BotonAcepta: {
+    width: 50,
+    height: 50,
+    backgroundColor: "#00C3FF"
   },
 });
