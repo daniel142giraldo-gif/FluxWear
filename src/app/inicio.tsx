@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
@@ -110,8 +111,11 @@ export default function Inicio() {
   return (
     <ScrollView style={styles.Fondo}>
       <View style={styles.Superior}>
-        <Text style={styles.TituloPrincipal}>FluxWear</Text>
-        <Text style={styles.Logo}>Logo</Text>
+        <View style={styles.CajaTitulo}>
+          <Text style={styles.Titulo}>Flux</Text>
+          <Text style={styles.Titulo1}>Wear</Text>
+        </View>
+        <Text style={styles.Logo}></Text>
         <Pressable>
           <Image
             source={Campana}
@@ -133,17 +137,29 @@ export default function Inicio() {
 
       <View style={styles.SeccionModulo}>
         <View style={styles.SuperiorModulo}>
-          <View style={styles.ImagenModulo}></View>
+          <View style={styles.ImagenModulo}>
+            <LinearGradient
+              colors={["#00d2ff", "#ffffff", "#994DE6FF"]}
+              locations={[0, 0.5, 1]}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 1 }}
+              style={styles.DegradadoModulo}
+            />
+          </View>
           <Text style={styles.TextoM}>Tu módulo inteligente</Text>
         </View>
         <View style={styles.InferiorModulo}>
           <View style={styles.ContenedorMo}>
             <Text style={styles.TextoM1}>Closet Inteligente</Text>
-            <Text>Imagen contenedor 1 de la seccion modulo</Text>
+            <View style={styles.CajaImagen}>
+              <Text></Text>
+            </View>
           </View>
           <View style={styles.ContenedorMo}>
             <Text style={styles.TextoM1}>Calendario de outfits</Text>
-            <Text>Imagen contenedor 2 de la seccion modulo</Text>
+            <View style={styles.CajaImagen}>
+              <Text></Text>
+            </View>
           </View>
         </View>
       </View>
@@ -189,74 +205,83 @@ export default function Inicio() {
           <ImageBackground
           source={ImagenPublicacion}
           style={styles.ImagenPublicacion}
+          resizeMode="cover"
           >
-          <View style={styles.Seccion1Publicacion}>
-            <View style={styles.InformacionUsuario}>
-              <Image
-                source={ImagenPerfil}
-                style={styles.ImagenPerfil}
-              />
-              <View style={styles.Nombres}>
-                <Text style={styles.Nombre}>Nombre de quien publica</Text>
-                <Text style={styles.Nombre1}>Informacion verificado</Text>
+            <LinearGradient
+              colors={["rgba(0,0,0,0.6)", "rgba(0,0,0,0)"]}
+              style={styles.DegradadoSuperior}
+            />
+            <View style={styles.Seccion1Publicacion}>
+              <View style={styles.InformacionUsuario}>
+                <Image
+                  source={ImagenPerfil}
+                  style={styles.ImagenPerfil}
+                />
+                <View style={styles.Nombres}>
+                  <Text style={styles.Nombre}>Nombre de quien publica</Text>
+                  <Text style={styles.Nombre1}>Informacion verificado</Text>
+                </View>
               </View>
+              <Pressable style={styles.BotonSeguir}>
+                <Text style={styles.TextoSeguir}>Seguir</Text>
+              </Pressable>
             </View>
-            <Pressable style={styles.BotonSeguir}>
-              <Text style={styles.TextoSeguir}>Seguir</Text>
-            </Pressable>
-          </View>
-          <View style={styles.InferiorPublicacion}>
-            <View style={styles.Seccion2Publicacion}>
-              <View style={styles.Seccion1Logos}>
-                <View style={styles.Likes}>
-                  <Pressable onPress={handleLike}>
-                    <Animated.Image
-                      source={liked ? Like : LogoParaTi}
-                      style={[
-                        styles.LogoLike,
-                        {
-                          transform: [{ scale: escalaCorazon}]
-                        }
-                      ]}
-                    />
+            <View style={styles.InferiorPublicacion}>
+              <View style={styles.Seccion2Publicacion}>
+                <View style={styles.Seccion1Logos}>
+                  <View style={styles.Likes}>
+                    <Pressable onPress={handleLike}>
+                      <Animated.Image
+                        source={liked ? Like : LogoParaTi}
+                        style={[
+                          styles.LogoLike,
+                          {
+                            transform: [{ scale: escalaCorazon}]
+                          }
+                        ]}
+                      />
+                    </Pressable>
+                    <Text style={styles.Conteo}>{likes}</Text>
+                  </View>
+                  <View style={styles.Comentarios}>
+                    <Pressable>
+                      <Image
+                        source={LogoComentarios}
+                        style={styles.LogoComentario}
+                      />
+                    </Pressable>
+                    <Text style={styles.Conteo}>Conteo comentarios</Text>
+                  </View>
+                </View>
+                <View style={styles.Seccion2Logos}>
+                  <View style={styles.Compartir}>
+                    <Pressable>
+                      <Image
+                        source={LogoCompartir}
+                        style={styles.LogoCompartir}
+                      />
+                     </Pressable> 
+                  </View>
+                </View>
+              </View>
+              <View style={styles.Seccion3Publicacion}>
+                <View style={styles.ContenedorDescripcion}>
+                  <Text style={styles.DescripcionTexto}>Texto descripcion de la publicacion</Text>
+                </View>
+                <View style={styles.ContenedorDescripcion}>
+                  <Pressable style={styles.BotonHashtag}>
+                   <Text style={styles.DescripcionHashtag}>#Techwear</Text>
                   </Pressable>
-                  <Text style={styles.Conteo}>{likes}</Text>
-                </View>
-                <View style={styles.Comentarios}>
-                  <Pressable>
-                    <Image
-                      source={LogoComentarios}
-                      style={styles.LogoComentario}
-                    />
+                  <Pressable style={styles.BotonHashtag}>
+                   <Text style={styles.DescripcionHashtag}>Hashtags de la publicacion</Text>
                   </Pressable>
-                  <Text style={styles.Conteo}>Conteo comentarios</Text>
-                </View>
-              </View>
-              <View style={styles.Seccion2Logos}>
-                <View style={styles.Compartir}>
-                  <Pressable>
-                    <Image
-                      source={LogoCompartir}
-                      style={styles.LogoCompartir}
-                    />
-                   </Pressable> 
                 </View>
               </View>
             </View>
-            <View style={styles.Seccion3Publicacion}>
-              <View style={styles.ContenedorDescripcion}>
-                <Text style={styles.DescripcionTexto}>Texto descripcion de la publicacion</Text>
-              </View>
-              <View style={styles.ContenedorDescripcion}>
-                <Pressable style={styles.BotonHashtag}>
-                 <Text style={styles.DescripcionHashtag}>Hashtags de la publicacion</Text>
-                </Pressable>
-                <Pressable style={styles.BotonHashtag}>
-                 <Text style={styles.DescripcionHashtag}>Hashtags de la publicacion</Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
+            <LinearGradient
+              colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.7)"]}
+              style={styles.DegradadoInferior}
+            />
           </ImageBackground>
         </View>
       </View>
@@ -266,27 +291,49 @@ export default function Inicio() {
 
 const styles = StyleSheet.create({
   Fondo: {
-    backgroundColor: "#07090ffa",
+    backgroundColor: "#06080efa",
   },
   Superior: {
     flexDirection: "row",
     width: "100%",
-    height: 120,
+    height: 150,
     justifyContent: "space-between",
     alignItems: "center",
     padding: 15,
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: "#3b3a3a",
   },
-  TituloPrincipal: {
+  CajaTitulo: {
+    flexDirection: "row",
+  },
+  Titulo: {
+    marginTop: 25,
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#ffffff",
+    letterSpacing: 0.5,
+  },
+  Titulo1: {
+    marginTop: 25,
     fontSize: 28,
     fontWeight: "bold",
     color: "#00d2ff",
     letterSpacing: 0.5,
-    marginLeft: 15,
   },
   Logo: {
-    color: "#ffffff",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#00d2ff",
+    width: 75,
+    height: 75,
+    borderRadius: 20,
+    shadowColor: "#00ddff",
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.6,
+    shadowRadius: 60,
+    elevation: 6,
+    marginRight: 35,
+    marginTop: 20,
   },
   LogoCampana: {
     marginRight: 30,
@@ -299,10 +346,10 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   ContenedorBusqueda: {
-    marginLeft: "4.5%",
+    marginLeft: 20,
     width: "90%",
-    height: "90%",
-    backgroundColor: "#181717",
+    height: 68,
+    backgroundColor: "#101015",
     flexDirection: "row",
     borderRadius: 15,
     padding: 20,
@@ -317,29 +364,30 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 20,
     marginLeft: 15,
+    height: "100%",
   },
   SeccionModulo: {
     flexDirection: "column",
     height: 235,
-    marginTop: 45,
+    marginTop: 30,
   },
   SuperiorModulo: {
     width: "93%",
     flexDirection: "row",
-    height: "20%",
-    marginLeft: "4.7%",
+    height: 40,
+    marginLeft: 20,
   },
   InferiorModulo: {
     flexDirection: "row",
-    width: "100%",
-    height: "80%",
-    marginLeft: "3.5%",
+    width: "95%",
+    height: 160,
     marginTop: 20,
+    justifyContent: "space-between",
+    marginLeft: 8,
   },
   ImagenModulo: {
-    height: "80%",
-    width: "1.3%",
-    backgroundColor: "#00d2ff",
+    height: 30,
+    width: "2%",
     borderRadius: 20,
     shadowColor: "#994DE6FF",
     shadowOffset: { width: 0, height: 8 },
@@ -347,51 +395,72 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 6,
   },
+  DegradadoModulo: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 50,
+  },
   TextoM: {
     color: "#ffffff",
-    fontSize: 26,
+    fontSize: 23,
     marginLeft: 13,
+    fontWeight: 700,
   },
   ContenedorMo: {
-    width: "42%",
-    backgroundColor: "#235b770f",
-    marginLeft: "3.2%",
+    width: "48%",
+    backgroundColor: "#070714",
     height: "100%",
     flexDirection: "row",
     borderRadius: 20,
     borderWidth: 0.5,
     borderColor: "#045669",
     alignItems: "center",
-    padding: 30,
     shadowColor: "#00d2ff",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 6,
+    justifyContent: "space-between",
+    padding: 10,
+  },
+  CajaImagen: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#00d2ff",
+    width: 60,
+    height: 60,
+    borderRadius: 20,
+    shadowColor: "#00ddff",
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.6,
+    shadowRadius: 60,
+    elevation: 6,
   },
   TextoM1: {
     color: "#ffffff",
-    fontSize: 26,
+    fontSize: 20,
+    width: "60%",
+    fontWeight: 800,
   },
   SeccionTendencias: {
     flexDirection: "column",
     height: 500,
-    marginTop: 90,
+    marginTop: 40,
+    width: "100%",
   },
   SuperiorTendencias: {
     width: "93%",
     flexDirection: "row",
     height: "8%",
-    marginLeft: "6.5%",
+    marginLeft: 20,
     justifyContent: "space-between",
   },
   SuperiorTendencias1: {
     flexDirection: "row",
   },
   InferiorTendencias: {
-    width: "80%",
+    width: "100%",
     height: "92%",
-    marginLeft: "3.5%",
     marginTop: 25,
   },
   LogoTendencias: {
@@ -400,11 +469,12 @@ const styles = StyleSheet.create({
   },
   TextoT: {
     color: "#ffffff",
-    fontSize: 26,
+    fontSize: 23,
     marginLeft: 15,
+    fontWeight: 700,
   },
   BotonVerTodo: {
-    marginRight: 60,
+    marginRight: 30,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -412,13 +482,18 @@ const styles = StyleSheet.create({
     color: "#03b4dc",
   },
   Carrusel: {
-    width: "93%",
+    width: "75%",
     height: "100%",
     overflow: "hidden",
-    marginLeft: "22%",
+    marginLeft: 50,
+    shadowColor: "#00ddff",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
+    elevation: 6,
   },
   ImagenCarrusel: {
-    width: "80%",
+    width: "100%",
     height: "100%",
     borderRadius: 20,
   },
@@ -438,13 +513,14 @@ const styles = StyleSheet.create({
   SeccionParaTi: {
     flexDirection: "column",
     height: 1000,
-    marginTop: 130,
+    marginTop: 95,
+    justifyContent: "flex-start",
   },
   SuperiorParaTi: {
     width: "93%",
     flexDirection: "row",
     height: "4.5%",
-    marginLeft: "3.5%",
+    marginLeft: 13,
   },
   LogoParaTi: {
     width: 30,
@@ -454,22 +530,29 @@ const styles = StyleSheet.create({
   },
   TextoParaTi: {
     color: "#ffffff",
-    fontSize: 26,
+    fontSize: 23,
     marginLeft: 15,
+    fontWeight: 700,
   },
   Publicacion: {
-    width: "90%",
-    height: 800,
-    marginLeft: "4.8%",
-    marginTop: 13,
+    width: "95%",
+    height: 530,
+    marginLeft: 10,
+    marginTop: 8,
   },
   ImagenPublicacion: {
     width: "100%",
     height: "100%",
     borderRadius: 18,
     overflow: "hidden",
-    flexDirection: "column",
     justifyContent: "space-between",
+  },
+  DegradadoSuperior: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 150,
   },
   Seccion1Publicacion: {
     width: "96%",
@@ -484,77 +567,80 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   ImagenPerfil: {
-    height: 70,
-    width: 70,
+    height: 43,
+    width: 43,
     borderRadius: 35,
-    marginLeft: 25,
+    marginLeft: 20,
   },
   Nombres: {
-    marginLeft: 18,
+    marginLeft: 10,
   },
   Nombre: {
     color: "#ffffff",
-    fontSize: 20,
+    fontSize: 16,
+    fontWeight: 600,
   },
   Nombre1: {
     color: "#dad6d6",
+    fontSize: 13,
   },
   BotonSeguir: {
-    width: "20%",
-    height: "55%",
-    backgroundColor: "#29282836",
+    width: "22%",
+    height: "65%",
+    backgroundColor: "#0a0a0a36",
     borderRadius: 50,
     borderWidth: 0.5,
     borderColor: "#797878cc",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 25,
+    marginRight: 3,
   },
   TextoSeguir: {
-    color: "#dedfe3",
-    fontSize: 18,
+    color: "#e6e7eb",
+    fontSize: 15,
+    fontWeight: 700,
   },
   InferiorPublicacion: {
     flexDirection: "column",
+    height: 150,
+    justifyContent: "flex-start",
   },
   Seccion2Publicacion: {
     width: "96%",
-    height: "16%",
     flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 20,
+    height: 45,
     justifyContent: "space-between",
-    marginBottom: 30,
+    alignItems: "center",
   },
   Seccion1Logos: {
     flexDirection: "row",
   },
   Likes: {
     flexDirection: "row",
-    marginLeft: 8,
+    marginLeft: 15,
   },
   LogoLike: {
     width: 40,
     height: 40,
-    resizeMode: "contain",
   },
   Comentarios: {
     flexDirection: "row",
-    marginLeft: 30,
+    marginLeft: 20,
   },
   LogoComentario: {
     width: 40,
     height: 40,
   },
   Conteo: {
-    color: "#dad6d6",
+    color: "#fffcfc",
     fontSize: 22,
+    fontWeight: 700,
   },
   Seccion2Logos: {
     flexDirection: "row",
   },
   Compartir: {
-    marginRight: 25,
+    marginRight: 20,
   },
   LogoCompartir: {
     width: 40,
@@ -562,32 +648,42 @@ const styles = StyleSheet.create({
   },
   Seccion3Publicacion: {
     width: "96%",
-    height: "20%",
+    height: 58,
     flexDirection: "column",
     marginLeft: 20,
   },
   ContenedorDescripcion: {
     flexDirection: "row",
-    marginBottom: 35,
+    marginBottom: 15,
   },
   BotonHashtag: {
-    width: "27%",
-    height: "70%",
+    maxHeight: 50,
+    maxWidth: "35%",
     backgroundColor: "#031c3d61",
     borderRadius: 50,
     borderWidth: 0.5,
     borderColor: "#30286f81",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 25,
-    marginLeft: 15,
+    marginRight: 20,
+    marginLeft: 5,
+    padding: 11,
   },
   DescripcionTexto: {
     color: "#ffffff",
     fontSize: 18,
+    fontWeight: 500,
   },
   DescripcionHashtag: {
     color: "#ffffff",
-    fontSize: 18,
+    fontSize: 17,
+    fontWeight: 900,
+  },
+  DegradadoInferior: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 150,
   },
 });

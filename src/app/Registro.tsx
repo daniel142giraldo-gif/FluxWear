@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import { useState } from 'react';
 import {
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -16,7 +17,7 @@ export default function Registro() {
   const router = useRouter();
 
   const {usuarios, setUsuarios} = useUsuarios();
-  const [acepta, setAcepta] = useState(false)
+  const [acepta, setAcepta] = useState(false);
 
   const [nuevoUsuario, setNuevoUsuario] = useState(
     {
@@ -134,24 +135,28 @@ export default function Registro() {
 
 
   return (
-    <View style={styles.Fondo}>
+    <ScrollView style={styles.Fondo}>
       <View style={styles.ContenedorForm}>
   
         <Text  style={styles.CrearCuenta}>Crear Cuenta</Text>
-        <View style={styles.Logo}>
-  
+        <View style={styles.CajaLogo}>
+          <View style={styles.Logo}>
+        
+          </View>
         </View>
-        <Text style={styles.TituloPrincipal}>FluxWear</Text>
+        <View style={styles.CajaTitulo}>
+          <Text style={styles.Titulo}>Flux</Text>
+          <Text style={styles.Titulo1}>Wear</Text>
+        </View>
   
         <View style={styles.Contenedor}>
-          <View style={styles.ImagenDatos}>
-  
+          <View style={styles.SeccionDetalles}>
+            <Text style={styles.TituloDatos}>Detalles personales</Text>
           </View>
-          <Text style={styles.TituloDatos}>Datos personales</Text>
   
           <View style={styles.Form}>  
     
-            <Text style={styles.label}>Nombre</Text>
+            <Text style={styles.label}>Nombres</Text>
             <TextInput
               style={styles.input}
               placeholder="Ingresa tu nombre completo"
@@ -162,7 +167,7 @@ export default function Registro() {
             <Text style={styles.label}>Nombre de usuario</Text>
             <TextInput
               style={styles.input}
-              placeholder="Ingrese su nombre de usuario"
+              placeholder="@ username"
               value={nuevoUsuario.nombre_usuario}
               onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, nombre_usuario: text })}
             />
@@ -170,7 +175,7 @@ export default function Registro() {
             <Text style={styles.label}>Correo Electronico</Text>
             <TextInput
               style={styles.input}
-              placeholder="correo@example.com"
+              placeholder="email@example.com"
               value={nuevoUsuario.correo}
               onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, correo: text })}
             />
@@ -178,7 +183,7 @@ export default function Registro() {
             <Text style={styles.label}>Telefono</Text>
             <TextInput
               style={styles.input}
-              placeholder="Ingresa tu numero de telefono"
+              placeholder="3232323232"
               value={nuevoUsuario.telefono}
               onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, telefono: text })}
             />
@@ -186,7 +191,7 @@ export default function Registro() {
             <Text style={styles.label}>Edad</Text>
             <TextInput
               style={styles.input}
-              placeholder="Ingresa tu edad"
+              placeholder="example: 20 años"
               value={nuevoUsuario.edad}
               onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, edad: text })}
             />
@@ -194,7 +199,7 @@ export default function Registro() {
             <Text style={styles.label}>Peso</Text>
             <TextInput
               style={styles.input}
-              placeholder="Ingresa tu peso"
+              placeholder="70 kg"
               value={nuevoUsuario.peso}
               onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, peso: text })}
             />
@@ -202,7 +207,7 @@ export default function Registro() {
             <Text style={styles.label}>Estatura</Text>
             <TextInput
               style={styles.input}
-              placeholder="Ingresa tu estatura"
+              placeholder="1.75"
               value={nuevoUsuario.estatura}
               onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, estatura: text })}
             />
@@ -210,7 +215,7 @@ export default function Registro() {
             <Text style={styles.label}>Contraseña</Text>
             <TextInput
               style={styles.input}
-              placeholder="Ingresa tu contraseña"
+              placeholder="......"
               value={nuevoUsuario.password}
               onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, password: text })}
             />
@@ -218,118 +223,202 @@ export default function Registro() {
             <Text style={styles.label}>Confirmar contraseña</Text>
             <TextInput
               style={styles.input}
-              placeholder="Ingresa tu contraseña nuevamente"
+              placeholder="......"
               value={nuevoUsuario.confirmarPassword}
               onChangeText={(text) => setNuevoUsuario({ ...nuevoUsuario, confirmarPassword: text })}
             />
-    
-            <Pressable 
-              style={styles.BotonAcepta}
-              onPress={() => setAcepta(!acepta)}>
-              <View>
-                <Text>{acepta ? '☑' : '☐'}</Text>
-                <Text>Acepto los términos y condiciones</Text>
+
+            <View style={styles.SeccionAcepta}>
+              <Pressable 
+                style={styles.BotonAcepta}
+                onPress={() => setAcepta(!acepta)}>
+                <Text style={styles.CuadroAcepta}>{acepta ? '☑' : '☐'}</Text>
+              </Pressable>
+              <View style={styles.CajaTexto}>
+                <Text style={styles.TextoAcepta}>Al unirme a FluxWear, acepto los </Text>
+                <Text style={styles.TextoAceptaAzul}>Términos y Condiciones y la Política de Procesamiento de IA</Text>
               </View>
-           </Pressable>
+            </View>
+            <Pressable style={styles.BotonPrincipal} onPress={registrar}>
+              <Text style={styles.TextoBoton}>Crear mi Cuenta</Text>
+            </Pressable>
+      
+            <View style={styles.SeccionInferior}>
+              <Text style={styles.Registrado}>Ya eres miembro?</Text>
+        
+              <Pressable style={styles.Boton} onPress={() => router.push("/")}>
+                <Text style={styles.TextoBotonInicio}>Iniciar Sesion</Text>
+              </Pressable>
+            </View>
     
-           <Text>Al crear una cuenta, aceptas nuestros Términos y Condiciones y la Política de Privacidad de FluxWear.</Text>
           </View>
         </View>
-  
-        <Pressable style={styles.BotonPrincipal} onPress={registrar}>
-          <Text>Crear mi Cuenta</Text>
-        </Pressable>
-  
-        <Text style={styles.Registrado}></Text>
-  
-        <Pressable style={styles.Boton} onPress={() => router.push("/")}>
-          <Text>Iniciar Sesion</Text>
-        </Pressable>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   
   Fondo: {
-    backgroundColor: "#030A16",
+    backgroundColor: "#09090a",
   },
   ContenedorForm: {
-    backgroundColor: "#030A16",
-    height: 700,
+    height: 1600,
     width: "95%",
   },
   CrearCuenta: {
-    
+    fontSize: 20,
+    color: "#ffffff",
+    marginLeft: 30,
+    marginTop: 50,
+    fontWeight: 700,
+  },
+  CajaLogo: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
   },
   Logo: {
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#00d2ff",
+    width: 75,
+    height: 75,
+    borderRadius: 20,
+    shadowColor: "#00ddff",
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.6,
+    shadowRadius: 60,
+    elevation: 6,
   },
-  TituloPrincipal: {
+  CajaTitulo: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  Titulo: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#ffffff",
+    letterSpacing: 0.5,
+  },
+  Titulo1: {
     fontSize: 28,
     fontWeight: "bold",
     color: "#00d2ff",
     letterSpacing: 0.5,
   },
   Contenedor: {
-    height: "75%",
-    width: "90%",
-    backgroundColor: "rgba(6, 20, 39, 0.88)",
+    width: "92%",
+    height: 1330,
+    backgroundColor: "#02060f",
     borderRadius: 24,
     borderWidth: 1.5,
-    borderColor: "rgba(0, 210, 255, 0.35)",
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
-    marginLeft: "5%",
+    borderColor: "rgba(9, 59, 71, 0.35)",
+    shadowColor: "#00ddff",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.8,
+    shadowRadius: 20,
+    elevation: 6,
+    padding: 15,
+    marginLeft: 23,
+    marginTop: 30,
+  },
+  SeccionDetalles: {
+    flexDirection: "row",
   },
   ImagenDatos: {
     
   },
   TituloDatos: {
-
+    marginTop: 15,
+    color: "#ffffff",
+    fontSize: 20,
+    fontWeight: 700,
   },
   Form: {
-
+    width: "97%",
+    marginLeft: 6,
   },
   label: {
-    fontSize: 11,
+    fontSize: 15,
     fontWeight: "700",
-    color: "#94A3B8",
+    color: "#e1e2e4",
     letterSpacing: 1,
-    marginBottom: 8,
+    marginBottom: 18,
+    marginTop: 18,
   },
   input: {
-    flex: 1,
-    color: "#FFFFFF",
-    fontSize: 14,
+    fontSize: 20,
+    backgroundColor: "#171921",
+    borderRadius: 17,
+    borderColor: "#303133",
+    borderWidth: 1,
+    height: 50,
+    color: "#b7b7b7",
   },
   BotonPrincipal: {
     backgroundColor: "#00C3FF",
-    borderRadius: 25,
-    height: 50,
+    borderRadius: 30,
+    height: 60,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 16,
+    marginTop: 40,
     marginBottom: 20,
     shadowColor: "#00d2ff",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.6,
     shadowRadius: 8,
     elevation: 6,
   },
-  Registrado: {
-    
+  TextoBoton: {
+    color: "#0c141f",
+    fontSize: 17,
+    fontWeight: 700,
   },
-  Boton: {
-    
+  SeccionAcepta: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: 300,
+    marginTop: 30,
   },
   BotonAcepta: {
-    width: 50,
-    height: 50,
-    backgroundColor: "#00C3FF"
+    width: 22,
+    height: 22,
+    backgroundColor: "#00C3FF",
+  },
+  CuadroAcepta: {
+    width: "100%",
+    height: "100%",
+  },
+  CajaTexto: {
+    marginLeft: 15,
+  },
+  TextoAcepta: {
+    color: "#FFFFFF",
+    fontSize: 15,
+  },
+  TextoAceptaAzul: {
+    color: "#00d2ff",
+    fontSize: 16,
+  },
+  SeccionInferior: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "69%",
+    marginLeft: 45,
+  },
+  Registrado: {
+    color: "#b7b0b0",
+  },
+  Boton: {
+    width: 90,
+
+  },
+  TextoBotonInicio: {
+    color: "#ffffff",
+    fontWeight: 700,
   },
 });
