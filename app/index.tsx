@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   ImageBackground,
@@ -7,34 +8,22 @@ import {
   TextInput,
   View
 } from "react-native";
-
-import { router } from "expo-router";
-
-import { useUsuarios } from '../context/UsuarioContext';
-
-import FondoInicio from '../../assets/images/FondoInicio.png';
+import FondoInicio from '../assets/images/FondoInicio.png';
+import { useSocialStore } from '../src/features/social/store/useSocialStore';
 
 export default function Login() {
   const [correo, setCorreo] = useState("");
   const [contraseña, setContraseña] = useState("");
 
-  const {usuarios, setUsuarioActual} = useUsuarios();
+  const { login: loginStore } = useSocialStore();
 
   const inicioSesion = () => {
-    const usuarioEncontrado = usuarios.find(
-        (usuario) =>
-            usuario.correo === correo &&
-            usuario.password === contraseña
-    );
-  
-    if (!usuarioEncontrado) {
-      alert("Correo o contraseña incorrectos");
+    const result = loginStore(correo, contraseña);
+    if (!result.ok) {
+      alert(result.error);
       return;
     }
-  
-    setUsuarioActual(usuarioEncontrado);
-  
-    router.push("/inicio");
+    router.push("/home")
   }  
   
   return (

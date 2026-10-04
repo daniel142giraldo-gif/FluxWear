@@ -10,13 +10,13 @@ import {
 } from "react-native";
 
 
-import { useUsuarios } from '../context/UsuarioContext';
+import { useSocialStore } from '../src/features/social/store/useSocialStore';
 
 export default function Registro() {
 
   const router = useRouter();
 
-  const {usuarios, setUsuarios} = useUsuarios();
+  const { registrar: registrarStore } = useSocialStore();
   const [acepta, setAcepta] = useState(false);
 
   const [nuevoUsuario, setNuevoUsuario] = useState(
@@ -113,24 +113,25 @@ export default function Registro() {
         return; 
     }
 
-    if (!acepta) {
-      alert("Debes aceptar los términos y condiciones");
-      return;
+    if (!acepta) { 
+      alert("Debes aceptar los términos"); 
+      return; 
     }
 
-    const usuario = {
-      ...nuevoUsuario,
-      edad: edad,
+    const result = registrarStore({
+      nombre: nuevoUsuario.nombre,
+      nombre_usuario: nuevoUsuario.nombre_usuario,
+      correo: nuevoUsuario.correo,
+      telefono: nuevoUsuario.telefono,
+      edad: Number(nuevoUsuario.edad),
       peso: Number(nuevoUsuario.peso),
       estatura: Number(nuevoUsuario.estatura),
-    };
+      password: nuevoUsuario.password,
+      confirmarPassword: nuevoUsuario.confirmarPassword,
+    })
 
-    setUsuarios([
-      ...usuarios,
-      usuario
-    ])
-
-    router.push("/");
+    if(!result.ok){ alert(result.error); return; }
+    router.push("/home");
 }
 
 
