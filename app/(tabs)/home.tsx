@@ -9,6 +9,8 @@ import {
   TextInput,
   View
 } from "react-native";
+import { NotificationList } from '../../src/components/notifications/NotificationList';
+import { BottomSheet } from '../../src/components/ui/BottomSheet/BottomSheet';
 
 import PublicacionCard from '@/features/social/components/PublicacionCard';
 import { mockPublicaciones } from '@/features/social/data/mockPublicaciones';
@@ -26,6 +28,7 @@ import LogoParaTi from '../../assets/images/LogoParaTi.svg';
 export default function Inicio() {
 
   const [publicaciones, setPublicaciones] = useState<Publicacion[]>(mockPublicaciones);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const [indice, setIndice] = useState(0);
   const slides = [
@@ -96,7 +99,10 @@ export default function Inicio() {
                 <Text style={styles.Titulo1}>Wear</Text>
               </View>
               <Text style={styles.Logo}></Text>
-              <Pressable style={styles.LogoCampana}>
+              <Pressable 
+                style={styles.LogoCampana}
+                onPress={() => setShowNotifications(true)}
+              >
                 <Campana width={28} height={28} />
               </Pressable>
             </View>
@@ -177,6 +183,14 @@ export default function Inicio() {
           </>
         }
       />
+      <BottomSheet
+        isVisible={showNotifications}
+        initialSnap={25}
+        showBlur={true}
+        onClose={() => setShowNotifications(false)}
+      >
+        <NotificationList />
+      </BottomSheet>
     </View>
   );
 }

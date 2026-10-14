@@ -39,6 +39,10 @@ export default function RootLayout() {
       }}
     >
       <Tabs.Screen 
+        name="index" 
+        options={{ href: null }} 
+      />
+      <Tabs.Screen 
         name="home" 
         options={{
         title: 'Inicio',

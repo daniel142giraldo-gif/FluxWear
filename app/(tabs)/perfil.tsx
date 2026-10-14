@@ -9,6 +9,7 @@ import {
 
 import { LinearGradient } from 'expo-linear-gradient';
 
+
 export default function Perfil () {
 
     return (
@@ -128,6 +129,7 @@ const styles = StyleSheet.create ({
         alignItems: "center",
         paddingTop: 10,
         paddingBottom: 20,
+        marginTop: 40,
     },
     BotonesHeader: {
         flexDirection: "row",
@@ -199,7 +201,7 @@ const styles = StyleSheet.create ({
     },
     Botones2: {
         flexDirection: "row",
-        backgroundColor: "#0F121C",
+        backgroundColor: "#101218",
         borderRadius: 12,
         borderWidth: 1,
         borderColor: "#1E232F",
@@ -210,7 +212,7 @@ const styles = StyleSheet.create ({
         flex: 1,
         alignItems: "center",
         borderRightWidth: 1,
-        borderRightColor: "#1E232F",
+        borderRightColor: "#1a1e27",
     },
     Texto2: {
         fontSize: 18,
@@ -231,9 +233,9 @@ const styles = StyleSheet.create ({
         gap: 6,
     },
     BotonDestacado: {
-        width: 64,
-        height: 64,
-        borderRadius: 32,
+        width: 80,
+        height: 80,
+        borderRadius: 40,
         borderWidth: 1.5,
         borderColor: "#2A2E3A",
         backgroundColor: "#12151F",
