@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { MAX_SNAP, MIN_SNAP, SNAP_POINTS } from '../constants/snapPoints';
+import { MAX_SNAP, MIN_SNAP, SNAP_POINTS, OFFICIAL_SNAPS } from '../constants/snapPoints';
 import { SnapPoint } from '../types/bottomSheet';
 
 export const useSnapPoints = (initialSnap: SnapPoint = 25) => {

@@ -1,68 +1,89 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import SeccionBusqueda from "@/components/search/SeccionBusqueda";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRef, useState } from "react";
 import {
   FlatList,
   Image,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
-  View
+  View,
 } from "react-native";
-import { NotificationList } from '../../src/components/notifications/NotificationList';
-import { BottomSheet } from '../../src/components/ui/BottomSheet/BottomSheet';
 
-import PublicacionCard from '@/features/social/components/PublicacionCard';
-import { mockPublicaciones } from '@/features/social/data/mockPublicaciones';
-import { Publicacion } from '../../src/types/publicacion';
+import { NotificationList } from "../../src/components/notifications/NotificationList";
+import { BottomSheet } from "../../src/components/ui/BottomSheet/BottomSheet";
 
-import Campana from '../../assets/images/Campana.svg';
+import PublicacionCard from "@/features/social/components/PublicacionCard";
+import { mockPublicaciones } from "@/features/social/data/mockPublicaciones";
+import { Publicacion } from "../../src/types/publicacion";
+
 import Streetwear from "../../assets/images/Imagen1.jpg";
-import Elegante from '../../assets/images/Imagen2.jpg';
-import Techwear from '../../assets/images/Imagen3.jpg';
-import Retro from '../../assets/images/Imagen4.jpg';
-import LogoFuego from '../../assets/images/LogoFuego.svg';
-import LogoParaTi from '../../assets/images/LogoParaTi.svg';
-
+import Elegante from "../../assets/images/Imagen2.jpg";
+import Techwear from "../../assets/images/Imagen3.jpg";
+import Retro from "../../assets/images/Imagen4.jpg";
+import LogoFuego from "../../assets/images/LogoFuego.svg";
+import LogoParaTi from "../../assets/images/LogoParaTi.svg";
 
 export default function Inicio() {
-
-  const [publicaciones, setPublicaciones] = useState<Publicacion[]>(mockPublicaciones);
+  const [publicaciones, setPublicaciones] =
+    useState<Publicacion[]>(mockPublicaciones);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [busquedaVisible, setBusquedaVisible] = useState(false);
+  const barraBusquedaRef = useRef<View>(null);
+
+  const [origen, setOrigen] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
 
   const [indice, setIndice] = useState(0);
-  const slides = [
-      {
-        titulo: 'STEETWEAR',
-        imagen: Streetwear
-      }, 
-      {
-        titulo: 'ELEGANTE',
-        imagen: Elegante
-      }, 
-      {
-        titulo: 'TECHWEAR',
-        imagen: Techwear
+
+  const abrirBusqueda = () => {
+    barraBusquedaRef.current?.measureInWindow(
+      (x, y, width, height) => {
+        setOrigen({ x, y, width, height });
+        setBusquedaVisible(true);
       },
-      {
-        titulo: 'RETRO',
-        imagen: Retro
-      }
+    );
+  };
+  const slides = [
+    {
+      titulo: "STEETWEAR",
+      imagen: Streetwear,
+    },
+    {
+      titulo: "ELEGANTE",
+      imagen: Elegante,
+    },
+    {
+      titulo: "TECHWEAR",
+      imagen: Techwear,
+    },
+    {
+      titulo: "RETRO",
+      imagen: Retro,
+    },
   ];
 
   const handleLike = (id: string) => {
-    setPublicaciones(prev => prev.map(p =>
-      p.id === id ? { 
-        ...p, 
-        liked: !p.liked, 
-        likes: p.liked ? p.likes - 1 : p.likes + 1 
-      } : p
-    ));
-
+    setPublicaciones((prev) =>
+      prev.map((p) =>
+        p.id === id
+          ? {
+              ...p,
+              liked: !p.liked,
+              likes: p.liked ? p.likes - 1 : p.likes + 1,
+            }
+          : p,
+      ),
+    );
   };
 
   const [lactivo, setActivo] = useState("casa");
-  
+
   /*const imagenesMenu = {
     casa: {
       gris: require('./IMGE/Casa.png'), morado: require('./IMGE/Casita.png')
@@ -98,27 +119,36 @@ export default function Inicio() {
                 <Text style={styles.Titulo}>Flux</Text>
                 <Text style={styles.Titulo1}>Wear</Text>
               </View>
-              <Text style={styles.Logo}></Text>
-              <Pressable 
+
+              <Pressable
                 style={styles.LogoCampana}
                 onPress={() => setShowNotifications(true)}
               >
-                <Campana width={28} height={28} />
+                <Ionicons
+                  name="notifications-outline"
+                  size={26}
+                  color="#fff"
+                  style={{ marginRight: 16 }}
+                />
               </Pressable>
             </View>
-            
-            <View style={styles.SeccionBusqueda}>
+
+            <Pressable 
+              style={styles.SeccionBusqueda}
+              ref={barraBusquedaRef}
+              onPress={abrirBusqueda}
+            >
+              <View style={styles.ContenedorLogo}></View>
               <View style={styles.ContenedorBusqueda}>
-                <Pressable>
-                  <Text style={styles.Lupa}>Lupa</Text>
+                <Pressable style={styles.ContenedorLogo}>
+                  <Ionicons name="search" size={24} color="#8A9BB5" />
                 </Pressable>
-                <TextInput
-                style={styles.Busqueda}
-                placeholder="Busar outfits, estilos, prendas..."
-                />
+                <Pressable style={styles.ContenedorLogo}>
+                  <Ionicons name="mic-outline" size={24} color="#8A9BB5" />
+                </Pressable>
               </View>
-            </View>
-      
+            </Pressable>
+
             <View style={styles.SeccionModulo}>
               <View style={styles.SuperiorModulo}>
                 <View style={styles.ImagenModulo}>
@@ -147,7 +177,7 @@ export default function Inicio() {
                 </View>
               </View>
             </View>
-      
+
             <View style={styles.SeccionTendencias}>
               <View style={styles.SuperiorTendencias}>
                 <View style={styles.SuperiorTendencias1}>
@@ -173,7 +203,7 @@ export default function Inicio() {
                 </View>
               </View>
             </View>
-      
+
             <View style={styles.SeccionParaTi}>
               <View style={styles.SuperiorParaTi}>
                 <LogoParaTi width={28} height={28} />
@@ -191,6 +221,11 @@ export default function Inicio() {
       >
         <NotificationList />
       </BottomSheet>
+      <SeccionBusqueda
+        visible={busquedaVisible}
+        origen={origen}
+        onClose={() => setBusquedaVisible(false)}
+      />
     </View>
   );
 }
@@ -198,21 +233,23 @@ export default function Inicio() {
 const styles = StyleSheet.create({
   Fondo: {
     flex: 1,
-    backgroundColor: "#06080efa",
+    backgroundColor: "#040609fa",
     paddingBottom: 90,
   },
   Superior: {
     flexDirection: "row",
     width: "100%",
-    height: 100,
+    height: 60,
     justifyContent: "space-between",
     alignItems: "center",
     padding: 15,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#3b3a3a",
+    marginTop: 20,
   },
   CajaTitulo: {
     flexDirection: "row",
+    marginLeft: "33%",
+    height: 70,
+    
   },
   Titulo: {
     marginTop: 25,
@@ -244,28 +281,29 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   LogoCampana: {
-    marginRight: 30,
-    width: 30,
-    height: 30,
+    marginTop: 10,
+    height: 26,
   },
   SeccionBusqueda: {
-    width: "100%",
-    height: 80,
-    marginTop: 20,
-  },
-  ContenedorBusqueda: {
     marginLeft: 20,
     width: "90%",
-    height: 68,
-    backgroundColor: "#101015",
+    height: 58,
+    marginTop: 20,
     flexDirection: "row",
-    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 20,
-    borderWidth: 0.5,
-    borderColor: "#3b3a3a",
+    borderRadius: 50,
+    backgroundColor: "#151821",
   },
-  Lupa: {
-    color: "#ffffff",
+  ContenedorLogo: {
+    height: 24,
+  },
+  ContenedorBusqueda: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "22%",
   },
   Busqueda: {
     color: "#fff",
@@ -365,7 +403,7 @@ const styles = StyleSheet.create({
   },
   SuperiorTendencias1: {
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
   },
   InferiorTendencias: {
     width: "100%",
