@@ -15,6 +15,8 @@ import {
     View
 } from 'react-native';
 
+import Logo from '@/assets/images/Logo10.png';
+
 export default function IA () {
 
     const [ permission, requestPermission ] = useCameraPermissions();
@@ -49,7 +51,13 @@ export default function IA () {
         <>
         <ScrollView style={{flex: 1, backgroundColor: "#0A0A0A"}} contentContainerStyle={styles.Fondo}>
             <View style={styles.SeccionTitulo}>
-                <Text style={{fontSize: 24}}>✨</Text>
+                <View style={styles.ContenedorLogo}>
+                    <Image
+                      source={Logo}
+                      style={styles.Logo}
+                      resizeMode="cover"
+                    />
+                </View>
                 <Text style={styles.TituloPrincipal}>Escaner IA</Text>
                 <Text style={styles.Parrafo}>
                     Escanea tu cuerpo con IA y recibe outfits personalizados según tu estilo y apariencia
@@ -150,19 +158,24 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         width: "100%",
-        minHeight: 170,
+        height: 170,
         borderRadius: 24,
         borderWidth: 1.2,
         borderColor: "#0d71b0",
         backgroundColor: "#12151F",
-        paddingVertical: 20,
         paddingHorizontal: 16,
-        gap: 10,
         marginTop: 20,
         shadowColor: "#31a9f9",
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.6,
         shadowRadius: 16,
+    },
+    ContenedorLogo: {
+        height: 70,
+    },
+    Logo: {
+        width: 55,
+        height: 70,
     },
     TituloPrincipal: {
         fontSize: 40,
@@ -176,6 +189,7 @@ const styles = StyleSheet.create({
         width: "85%",
         textAlign: "center",
         lineHeight: 18,
+        marginBottom: 15,
     },
     SeccionEscaner: {
         alignItems: "center",

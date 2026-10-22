@@ -14,16 +14,11 @@ import {
 import { NotificationList } from "../../src/components/notifications/NotificationList";
 import { BottomSheet } from "../../src/components/ui/BottomSheet/BottomSheet";
 
+import Logo from '@/assets/images/Logo10.png';
 import PublicacionCard from "@/features/social/components/PublicacionCard";
 import { mockPublicaciones } from "@/features/social/data/mockPublicaciones";
 import { Publicacion } from "../../src/types/publicacion";
-
-import Streetwear from "../../assets/images/Imagen1.jpg";
-import Elegante from "../../assets/images/Imagen2.jpg";
-import Techwear from "../../assets/images/Imagen3.jpg";
-import Retro from "../../assets/images/Imagen4.jpg";
-import LogoFuego from "../../assets/images/LogoFuego.svg";
-import LogoParaTi from "../../assets/images/LogoParaTi.svg";
+;
 
 export default function Inicio() {
   const [publicaciones, setPublicaciones] =
@@ -39,8 +34,6 @@ export default function Inicio() {
     height: 0,
   });
 
-  const [indice, setIndice] = useState(0);
-
   const abrirBusqueda = () => {
     barraBusquedaRef.current?.measureInWindow(
       (x, y, width, height) => {
@@ -49,24 +42,6 @@ export default function Inicio() {
       },
     );
   };
-  const slides = [
-    {
-      titulo: "STEETWEAR",
-      imagen: Streetwear,
-    },
-    {
-      titulo: "ELEGANTE",
-      imagen: Elegante,
-    },
-    {
-      titulo: "TECHWEAR",
-      imagen: Techwear,
-    },
-    {
-      titulo: "RETRO",
-      imagen: Retro,
-    },
-  ];
 
   const handleLike = (id: string) => {
     setPublicaciones((prev) =>
@@ -138,7 +113,13 @@ export default function Inicio() {
               ref={barraBusquedaRef}
               onPress={abrirBusqueda}
             >
-              <View style={styles.ContenedorLogo}></View>
+              <View>
+                <Image
+                  source={Logo}
+                  style={styles.Logo}
+                  resizeMode="cover"
+                />
+              </View>
               <View style={styles.ContenedorBusqueda}>
                 <Pressable style={styles.ContenedorLogo}>
                   <Ionicons name="search" size={24} color="#8A9BB5" />
@@ -178,37 +159,7 @@ export default function Inicio() {
               </View>
             </View>
 
-            <View style={styles.SeccionTendencias}>
-              <View style={styles.SuperiorTendencias}>
-                <View style={styles.SuperiorTendencias1}>
-                  <LogoFuego width={28} height={28} />
-                  <Text style={styles.TextoT}>Tendencias para ti</Text>
-                </View>
-                <Pressable style={styles.BotonVerTodo}>
-                  <Text style={styles.TextoVerTodo}>Ver todo</Text>
-                </Pressable>
-              </View>
-              <View style={styles.InferiorTendencias}>
-                <View style={styles.Carrusel}>
-                  <Image
-                    source={slides[indice].imagen}
-                    style={styles.ImagenCarrusel}
-                    resizeMode="cover"
-                  />
-                  <View style={styles.ContenedorTexto}>
-                    <Text style={styles.TextoCarrusel}>
-                      {slides[indice].titulo}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-
             <View style={styles.SeccionParaTi}>
-              <View style={styles.SuperiorParaTi}>
-                <LogoParaTi width={28} height={28} />
-                <Text style={styles.TextoParaTi}>Para ti</Text>
-              </View>
             </View>
           </>
         }
@@ -234,7 +185,7 @@ const styles = StyleSheet.create({
   Fondo: {
     flex: 1,
     backgroundColor: "#040609fa",
-    paddingBottom: 90,
+    paddingBottom: 100,
   },
   Superior: {
     flexDirection: "row",
@@ -265,21 +216,6 @@ const styles = StyleSheet.create({
     color: "#00d2ff",
     letterSpacing: 0.5,
   },
-  Logo: {
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#00d2ff",
-    width: 75,
-    height: 75,
-    borderRadius: 20,
-    shadowColor: "#00ddff",
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.6,
-    shadowRadius: 60,
-    elevation: 6,
-    marginRight: 35,
-    marginTop: 20,
-  },
   LogoCampana: {
     marginTop: 10,
     height: 26,
@@ -298,6 +234,10 @@ const styles = StyleSheet.create({
   },
   ContenedorLogo: {
     height: 24,
+  },
+  Logo: {
+    width: 55,
+    height: 70,
   },
   ContenedorBusqueda: {
     flexDirection: "row",
@@ -452,25 +392,5 @@ const styles = StyleSheet.create({
   },
   SeccionParaTi: {
     marginTop: 20,
-  },
-  SuperiorParaTi: {
-    width: "93%",
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 30,
-    marginBottom: 10,
-    marginLeft: 13,
-  },
-  LogoParaTi: {
-    width: 30,
-    height: 30,
-    marginLeft: 15,
-    marginTop: 4,
-  },
-  TextoParaTi: {
-    color: "#ffffff",
-    fontSize: 23,
-    marginLeft: 15,
-    fontWeight: 700,
   },
 });

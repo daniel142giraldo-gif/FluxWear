@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 import {
     Animated,
+    Image,
     Modal,
     Pressable,
     ScrollView,
@@ -12,6 +13,8 @@ import {
     useWindowDimensions,
     View
 } from "react-native";
+
+import Logo from '@/assets/images/Logo10.png';
 
 type OrigenBusqueda = {
     x: number;
@@ -141,10 +144,17 @@ export default function SeccionBusqueda({
                              >
                                 <Ionicons name="chevron-back" size={35} color="#00d2ff" />
                             </Pressable>
-                            <Text style={styles.TextoBuscar}>Buscar</Text>
+                        </View>
+                        <View style={styles.ContenedorMedio}>
+                            <Text style={styles.TextoTitulo}>Flux</Text>
+                            <Text style={styles.TextoTitulo1}>Wear</Text>
                         </View>
                         <View style={styles.ContenedorDe}>
-                            <Text>Logo</Text>
+                            <Image
+                              source={Logo}
+                              style={styles.Logo}
+                              resizeMode="cover"
+                            />
                         </View>
                     </View>
     
@@ -291,26 +301,39 @@ const styles = StyleSheet.create({
         alignItems: "center",
         height: 40,
         marginTop: 10,
+        width: "100%",
     },
     ContenedorIz: {
-        width: "29%",
-        flexDirection: "row",
-        justifyContent: "space-between",
+        width: "25%",
         marginLeft: 10,
     },
     BotonCerrar: {
         height: 35,
         width: 30,
     },
-    TextoBuscar: {
+    ContenedorMedio: {
+        flexDirection: "row",
+        width: "40%",
+        height: 50,
+    },
+    TextoTitulo: {
         fontSize: 28,
-        fontWeight: "500",
-        color: "#fff",
+        fontWeight: "bold",
+        color: "#ffffff",
+        letterSpacing: 0.5,
+    },
+    TextoTitulo1: {
+        fontSize: 28,
+        fontWeight: "bold",
+        color: "#00d2ff",
+        letterSpacing: 0.5,
     },
     ContenedorDe: {
-        width: "35%",
-        flexDirection: "row",
-        justifyContent: "space-between",
+        marginRight: 10,
+    },
+    Logo: {
+      width: 55,
+      height: 70,
     },
     Seccion2: {
         height: 40,

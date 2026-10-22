@@ -1,11 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import {
+    Image,
     Pressable,
     ScrollView,
     StyleSheet,
     Text,
     View
 } from 'react-native';
+
+import Logo from '@/assets/images/Logo10.png';
 
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -16,7 +19,13 @@ export default function Perfil () {
         <View style={styles.Fondo}>
             <ScrollView contentContainerStyle={styles.Contenido} showsVerticalScrollIndicator={false}>
                 <View style={styles.Header}>
-                    <Text>Monograma</Text>
+                    <View style={styles.ContenedorLogo}>
+                        <Image
+                          source={Logo}
+                          style={styles.Logo}
+                          resizeMode="cover"
+                        />
+                    </View>
                     <View style={styles.BotonesHeader}>
                         <Ionicons name="notifications-outline" size={24} color="#fff" style={{marginRight: 16}} />
                         <Ionicons name="ellipsis-horizontal" size={24} color="#fff" />
@@ -130,6 +139,13 @@ const styles = StyleSheet.create ({
         paddingTop: 10,
         paddingBottom: 20,
         marginTop: 40,
+    },
+    ContenedorLogo: {
+        height: 70,
+    },
+    Logo: {
+        width: 55,
+        height: 70,
     },
     BotonesHeader: {
         flexDirection: "row",

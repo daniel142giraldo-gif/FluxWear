@@ -1,19 +1,16 @@
 import { Publicacion } from '../../../types/publicacion';
 
+import { Ionicons } from "@expo/vector-icons";
 import { useRef } from 'react';
 import {
-    Animated,
-    Image,
-    Pressable,
-    StyleSheet,
-    Text,
-    View
+  Animated,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View
 } from "react-native";
 
-import Like from '../../../../assets/images/Like1.png';
-import LogoComentarios from '../../../../assets/images/LogoComentarios.svg';
-import LogoCompartir from '../../../../assets/images/LogoCompartir.svg';
-import LogoParaTi from '../../../../assets/images/LogoParaTi.svg';
 
 type Props = {
     publicacion: Publicacion;
@@ -51,27 +48,27 @@ export default function PublicacionCard({ publicacion, onLike}: Props) {
 
   return (
     <View style={styles.Publicacion}>
+      <View style={styles.Seccion1Publicacion}>
+        <View style={styles.InformacionUsuario}>
+          <Image
+            source={publicacion.foto_perfil}
+            style={styles.ImagenPerfil}
+          />
+          <View style={styles.Nombres}>
+            <Text style={styles.Nombre}>{publicacion.nombre_usuario}</Text>
+            {publicacion.verificado && <Text style={styles.Nombre1}>Informacion verificado</Text>}
+          </View>
+        </View>
+        <Pressable style={styles.BotonSeguir}>
+          <Text style={styles.TextoSeguir}>Seguir</Text>
+        </Pressable>
+      </View>
       <View style={styles.ContenedorFoto}>
         <Image
           source={publicacion.foto_url}
           style={styles.ImagenPublicacion}
           resizeMode="cover"
         />
-        <View style={styles.Seccion1Publicacion}>
-          <View style={styles.InformacionUsuario}>
-            <Image
-              source={publicacion.foto_perfil}
-              style={styles.ImagenPerfil}
-            />
-            <View style={styles.Nombres}>
-              <Text style={styles.Nombre}>{publicacion.nombre_usuario}</Text>
-              {publicacion.verificado && <Text style={styles.Nombre1}>Informacion verificado</Text>}
-            </View>
-          </View>
-          <Pressable style={styles.BotonSeguir}>
-            <Text style={styles.TextoSeguir}>Seguir</Text>
-          </Pressable>
-        </View>
         <View style={styles.ContenedorHashtag}>
           {publicacion.hashtags.map((tag, index) => (
             <View key={index} style={styles.BotonHashtag}>
@@ -87,9 +84,9 @@ export default function PublicacionCard({ publicacion, onLike}: Props) {
               <Pressable onPress={handleLike}>
                 <Animated.View style={{ transform: [{ scale: escalaCorazon }] }}>
                   {publicacion.liked ? (
-                      <Image source={Like} style={styles.LogoLike} />
+                      <Ionicons name="heart" size={30} color="#ff0000"/>
                   ) : (
-                        <LogoParaTi width={32} height={32} />
+                        <Ionicons name="heart-outline" size={30} color="#838282"/>
                   )}
                 </Animated.View>
               </Pressable>
@@ -97,22 +94,27 @@ export default function PublicacionCard({ publicacion, onLike}: Props) {
             </View>
             <View style={styles.Comentarios}>
               <Pressable>
-                <LogoComentarios width={32} height={32} />
+                <Ionicons name="chatbubble-outline" size={30} color="#838282"/>
               </Pressable>
               <Text style={styles.Conteo}>{publicacion.comentarios}</Text>
             </View>
           </View>
           <View style={styles.Seccion2Logos}>
-            <View style={styles.Compartir}>
+            <View>
               <Pressable>
-                <LogoCompartir width={32} height={32} />
+                <Ionicons name="share-social-outline" size={30} color="#838282"/>
+              </Pressable> 
+            </View>
+            <View>
+              <Pressable>
+                <Ionicons name="bookmark-outline" size={30} color="#838282"/>
               </Pressable> 
             </View>
           </View>
         </View> 
         <View style={styles.ContenedorDescripcion}>
           <Text style={styles.DescripcionTexto}>
-            <Text style={{ fontWeight: "bold" }}>{publicacion.nombre_usuario}</Text>
+            <Text style={{ fontWeight: "bold" }}>{publicacion.nombre_usuario}: </Text>
             {publicacion.descripcion}
           </Text>
         </View> 
@@ -124,33 +126,33 @@ export default function PublicacionCard({ publicacion, onLike}: Props) {
 const styles = StyleSheet.create({
   Publicacion: {
     width: "95%",
-    height: 700,
+    height: 670,
     marginLeft: 10,
-    marginTop: 8,
     flexDirection: "column",
+    justifyContent: "space-between",
+    marginTop: 10,
+    marginBottom: 40,
   },
   ContenedorFoto: { 
     width: "100%", 
-    height: 530, 
-    borderRadius: 18, 
+    height: 570, 
+    borderBottomEndRadius: 12, 
     overflow: "hidden", 
-    position: "relative" 
+    position: "relative", 
+    marginTop: 10,
   },
   ImagenPublicacion: {
     width: "100%",
-    height: 530,
-    borderRadius: 18,
+    height: 570,
+    borderBottomEndRadius: 18,
     overflow: "hidden",
     justifyContent: "space-between",
   },
   Seccion1Publicacion: {
-    position: "absolute",
-    top: 15,
-    left: 10,
-    right: 10,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    height: 50,
   },
   InformacionUsuario: {
     flexDirection: "row",
@@ -160,24 +162,24 @@ const styles = StyleSheet.create({
     height: 43,
     width: 43,
     borderRadius: 35,
-    marginLeft: 20,
+    marginLeft: 5,
   },
   Nombres: {
     marginLeft: 10,
   },
   Nombre: {
     color: "#ffffff",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 600,
   },
   Nombre1: {
     color: "#dad6d6",
-    fontSize: 13,
+    fontSize: 12,
   },
   BotonSeguir: {
     width: "22%",
     height: "65%",
-    backgroundColor: "#0a0a0a36",
+    backgroundColor: "#11151dcc",
     borderRadius: 50,
     borderWidth: 0.5,
     borderColor: "#797878cc",
@@ -204,73 +206,58 @@ const styles = StyleSheet.create({
   },
   BotonHashtag: {
     maxHeight: 50,
-    maxWidth: "35%",
-    backgroundColor: "#031c3d61",
-    borderRadius: 50,
-    borderWidth: 0.5,
-    borderColor: "#30286f81",
+    maxWidth: 200,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 20,
+    marginRight: 5,
     marginLeft: 5,
-    padding: 11,
   },
   DescripcionHashtag: {
-    color: "#ffffff",
-    fontSize: 17,
-    fontWeight: 900,
+    color: "#fcfcfc",
+    fontSize: 14,
   },
   Seccion3Publicacion: {
-    width: "96%",
+    width: "100%",
     height: 58,
     flexDirection: "column",
-    marginLeft: 20,
+    marginLeft: 5,
   },
   Logos: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 10,
   },
   Seccion1Logos: {
     flexDirection: "row",
+    justifyContent: "space-between",
+    width: "30%",
   },
   Likes: {
     flexDirection: "row",
-    marginLeft: 15,
-  },
-  LogoLike: {
-    width: 40,
-    height: 40,
+    alignItems: "center",
   },
   Comentarios: {
     flexDirection: "row",
-    marginLeft: 20,
-  },
-  LogoComentario: {
-    width: 40,
-    height: 40,
+    alignItems: "center",
   },
   Conteo: {
     color: "#fffcfc",
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: 700,
   },
   Seccion2Logos: {
     flexDirection: "row",
-  },
-  Compartir: {
-    marginRight: 20,
-  },
-  LogoCompartir: {
-    width: 40,
-    height: 40,
+    justifyContent: "space-between",
+    width: "22%",
+    marginRight: 15,
   },
   ContenedorDescripcion: {
-    marginBottom: 15,
+    marginTop: 10,
   },
   DescripcionTexto: {
     color: "#ffffff",
-    fontSize: 18,
-    fontWeight: 500,
+    fontSize: 16,
+    fontWeight: 400,
   },
 });
