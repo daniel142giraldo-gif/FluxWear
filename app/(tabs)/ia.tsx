@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
     Alert,
     Image,
@@ -15,6 +15,8 @@ import {
     View
 } from 'react-native';
 
+import SeccionChatIA from '@/components/search/SeccionChatIA';
+
 import Logo from '@/assets/images/Logo10.png';
 
 export default function IA () {
@@ -22,6 +24,17 @@ export default function IA () {
     const [ permission, requestPermission ] = useCameraPermissions();
 
     const [showCamera, setShowCamera] = useState(false);
+
+    const [chatVisible, setChatVisible] = useState(false);
+
+    const barraChatRef = useRef<View>(null);
+
+    const [origenChat, setOrigenChat] = useState({
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+    })
 
     const abrirEscaner = async () => {
 
@@ -45,6 +58,15 @@ export default function IA () {
             }
         }
         setShowCamera(true);
+    };
+
+    const abrirChat = () => {
+        barraChatRef.current?.measureInWindow(
+            (x, y, width, height) => {
+                setOrigenChat({ x, y, width, height});
+                setChatVisible(true)
+            }
+        );
     };
 
     return (
@@ -105,17 +127,23 @@ export default function IA () {
                 </View>
             </View>
 
-            <View style={styles.SeccionChat}>
+            <Pressable 
+              style={styles.SeccionChat}
+              ref={barraChatRef}
+              onPress={abrirChat}
+            >
                 <Ionicons name="mic-outline" size={24} color="#8A9BB5" />
                 <TextInput
                     style={styles.Input}
                     placeholder="Preguntale a tu acesor personal..."
                     placeholderTextColor="#8A9BB5"
+                    editable={false}
+                    pointerEvents="none"
                 />
                 <Pressable style={styles.BotonChat}>
                     <Ionicons name="paper-plane" size={20} color="#fff" />
                 </Pressable>
-            </View>
+            </Pressable>
         </ScrollView>
 
         <Modal visible={showCamera} animationType="slide" statusBarTranslucent presentationStyle='fullScreen'>
@@ -140,6 +168,12 @@ export default function IA () {
                 )}
             </View>
         </Modal>
+        
+        <SeccionChatIA 
+            visible={chatVisible}
+            origen={origenChat}
+            onClose={() => setChatVisible(false)}
+        />
         </>
     );
 }
