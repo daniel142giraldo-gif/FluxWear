@@ -1,15 +1,31 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-export const NotificationList = () => {
+type ComentariosProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export const SeccionComentarios = ({ visible, onClose }: ComentariosProps) => {
   return (
-    <ScrollView style={styles.Fondo} contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
-
-      <View style={styles.Header}>
-        <Text style={styles.TextoComentarios}>Comentarios</Text>
-        <View style={styles.Separacion} />
-        <Text style={styles.ContadorComentarios}>0</Text>
-      </View>
-    </ScrollView>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onRequestClose={onClose}
+      statusBarTranslucent
+    >
+      <ScrollView style={styles.Fondo} contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
+  
+        <View style={styles.Header}>
+          <Pressable onPress={onClose}>
+              <Ionicons name="chevron-back" size={35} color="#00d2ff" />
+          </Pressable>
+          <Text style={styles.TextoComentarios}>Comentarios</Text>
+          <View style={styles.Separacion} />
+          <Text style={styles.ContadorComentarios}>0</Text>
+        </View>
+      </ScrollView>
+    </Modal>
   );
 };
 

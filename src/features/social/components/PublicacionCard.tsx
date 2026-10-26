@@ -1,7 +1,8 @@
+import { SeccionComentarios } from '@/components/Comentarios/SeccionComentarios';
 import { Publicacion } from '../../../types/publicacion';
 
 import { Ionicons } from "@expo/vector-icons";
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import {
   Animated,
   Image,
@@ -20,6 +21,7 @@ type Props = {
 export default function PublicacionCard({ publicacion, onLike}: Props) {
 
   const escalaCorazon = useRef(new Animated.Value(1)).current;
+  const [comentariosVisible, setComentariosVisible] = useState(false);
 
   const handleLike = () => {
     onLike(publicacion.id);
@@ -93,7 +95,7 @@ export default function PublicacionCard({ publicacion, onLike}: Props) {
               <Text style={styles.Conteo}>{publicacion.likes}</Text>
             </View>
             <View style={styles.Comentarios}>
-              <Pressable>
+              <Pressable onPress={() => setComentariosVisible(true)}>
                 <Ionicons name="chatbubble-outline" size={30} color="#838282"/>
               </Pressable>
               <Text style={styles.Conteo}>{publicacion.comentarios}</Text>
@@ -119,6 +121,10 @@ export default function PublicacionCard({ publicacion, onLike}: Props) {
           </Text>
         </View> 
       </View>
+      <SeccionComentarios 
+          visible={comentariosVisible}
+          onClose={() => setComentariosVisible(false)}
+      />
     </View>
   );
 }

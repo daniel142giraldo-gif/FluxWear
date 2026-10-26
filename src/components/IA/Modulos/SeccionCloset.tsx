@@ -1,79 +1,94 @@
 import { Ionicons } from "@expo/vector-icons";
 
 import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
 } from 'react-native';
 
-export const NotificationList = () => {
+type ClosetProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export const Closet = ({visible, onClose}: ClosetProps) => {
   return (
-    <ScrollView style={styles.Fondo} contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
-
-      <View style={styles.Header}>
-        <View style={styles.ContenedorIz}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onRequestClose={onClose}
+      statusBarTranslucent
+    >
+      <ScrollView style={styles.Fondo} contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
+  
+        <View style={styles.Header}>
+          <View style={styles.ContenedorIz}>
+            <Pressable
+              onPress={onClose}
+            >
+                <Ionicons name="chevron-back" size={35} color="#00d2ff" />
+            </Pressable>
+            <Text style={styles.Titulo}>Armario Virtual</Text>
+          </View>
           <Pressable>
-              <Ionicons name="chevron-back" size={35} color="#00d2ff" />
+            <Ionicons
+              name="notifications-outline"
+              size={26}
+              color="#fff"
+              style={{ marginRight: 16 }}
+            />
           </Pressable>
-          <Text style={styles.Titulo}>Armario Virtual</Text>
         </View>
-        <Pressable>
-          <Ionicons
-            name="notifications-outline"
-            size={26}
-            color="#fff"
-            style={{ marginRight: 16 }}
+  
+        <View style={styles.Seccion1}>
+          <Pressable style={styles.ContenedorBoton}>
+            <Text>Icono</Text>
+            <Text style={styles.TextoPrenda}>Todo</Text>
+          </Pressable>
+          <Pressable style={styles.ContenedorBoton}>
+            <Text>Icono</Text>
+            <Text style={styles.TextoPrenda}>Camisetas</Text>
+          </Pressable>
+          <Pressable style={styles.ContenedorBoton}>
+            <Text>Icono</Text>
+            <Text style={styles.TextoPrenda}>Camisa</Text>
+          </Pressable>
+          <Pressable style={styles.ContenedorBoton}>
+            <Text>Icono</Text>
+            <Text style={styles.TextoPrenda}>Pantalones</Text>
+          </Pressable>
+          <Pressable style={styles.ContenedorBoton}>
+            <Text>Icono</Text>
+            <Text style={styles.TextoPrenda}>Bermudas</Text>
+          </Pressable>
+          <Pressable style={styles.ContenedorBoton}>
+            <Text>Icono</Text>
+            <Text style={styles.TextoPrenda}>Chaquetas</Text>
+          </Pressable>
+          <Pressable style={styles.ContenedorBoton}>
+            <Text>Icono</Text>
+            <Text style={styles.TextoPrenda}>Hoodies</Text>
+          </Pressable>
+          <Pressable style={styles.ContenedorBoton}>
+            <Text>Icono</Text>
+            <Text style={styles.TextoPrenda}>Zapatos</Text>
+          </Pressable>
+        </View>
+  
+        <View style={styles.ContenedorBusqueda}>
+          <Text>Lupa</Text>
+          <TextInput 
+            style={styles.Input}
+            placeholder="Buscar en tu closet..."
+            placeholderTextColor={"#a09f9f"}
           />
-        </Pressable>
-      </View>
-
-      <View style={styles.Seccion1}>
-        <Pressable style={styles.ContenedorBoton}>
-          <Text>Icono</Text>
-          <Text style={styles.TextoPrenda}>Todo</Text>
-        </Pressable>
-        <Pressable style={styles.ContenedorBoton}>
-          <Text>Icono</Text>
-          <Text style={styles.TextoPrenda}>Camisetas</Text>
-        </Pressable>
-        <Pressable style={styles.ContenedorBoton}>
-          <Text>Icono</Text>
-          <Text style={styles.TextoPrenda}>Camisa</Text>
-        </Pressable>
-        <Pressable style={styles.ContenedorBoton}>
-          <Text>Icono</Text>
-          <Text style={styles.TextoPrenda}>Pantalones</Text>
-        </Pressable>
-        <Pressable style={styles.ContenedorBoton}>
-          <Text>Icono</Text>
-          <Text style={styles.TextoPrenda}>Bermudas</Text>
-        </Pressable>
-        <Pressable style={styles.ContenedorBoton}>
-          <Text>Icono</Text>
-          <Text style={styles.TextoPrenda}>Chaquetas</Text>
-        </Pressable>
-        <Pressable style={styles.ContenedorBoton}>
-          <Text>Icono</Text>
-          <Text style={styles.TextoPrenda}>Hoodies</Text>
-        </Pressable>
-        <Pressable style={styles.ContenedorBoton}>
-          <Text>Icono</Text>
-          <Text style={styles.TextoPrenda}>Zapatos</Text>
-        </Pressable>
-      </View>
-
-      <View style={styles.ContenedorBusqueda}>
-        <Text>Lupa</Text>
-        <TextInput 
-          style={styles.Input}
-          placeholder="Buscar en tu closet..."
-          placeholderTextColor={"#a09f9f"}
-        />
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+    </Modal>
   );
 };
 

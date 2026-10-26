@@ -1,39 +1,52 @@
 import { Ionicons } from "@expo/vector-icons";
 
 import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 
-export const NotificationList = () => {
-  return (
-    <ScrollView style={styles.Fondo} contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
+type SeguidosProps = {
+  visible: boolean;
+  onClose: () => void;
+};
 
-      <View style={styles.Header}>
-        <View style={styles.ContenedorIz}>
-          <Pressable>
-              <Ionicons name="chevron-back" size={35} color="#00d2ff" />
+export const Seguidos = ({ visible, onClose }: SeguidosProps) => {
+  return (
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onRequestClose={onClose}
+      statusBarTranslucent
+    >
+      <ScrollView style={styles.Fondo} contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
+  
+        <View style={styles.Header}>
+          <View style={styles.ContenedorIz}>
+            <Pressable onPress={onClose}>
+                <Ionicons name="chevron-back" size={35} color="#00d2ff" />
+            </Pressable>
+            <Text style={styles.Titulo}>Seguidores</Text>
+          </View>
+          <Pressable style={styles.Filtros}>
+            
           </Pressable>
-          <Text style={styles.Titulo}>Seguidores</Text>
         </View>
-        <Pressable style={styles.Filtros}>
-          
-        </Pressable>
-      </View>
-      <View style={styles.ContenedorBotones}>
-        <View style={styles.BotonesSecciones}>
-          <Pressable style={styles.Boton}>
-              <Text style={styles.TextoBotones}>Seguidos</Text>
-          </Pressable>
-          <Pressable style={styles.Boton}>
-              <Text style={styles.TextoBotones}>Seguidores</Text>
-          </Pressable>
+        <View style={styles.ContenedorBotones}>
+          <View style={styles.BotonesSecciones}>
+            <Pressable style={styles.Boton}>
+                <Text style={styles.TextoBotones}>Seguidos</Text>
+            </Pressable>
+            <Pressable style={styles.Boton}>
+                <Text style={styles.TextoBotones}>Seguidores</Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </Modal>
   );
 };
 

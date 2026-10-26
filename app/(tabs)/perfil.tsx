@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
     Image,
     Pressable,
@@ -8,12 +9,29 @@ import {
     View
 } from 'react-native';
 
+import { Editar } from '@/components/SeccionesPerfil/SeccionEditar';
+import { Seguidores } from '@/components/SeccionesPerfil/SeccionSeguidores';
+import { Seguidos } from '@/components/SeccionesPerfil/SeccionSeguidos';
+import { NotificationList } from "../../src/components/notifications/NotificationList";
+import { BottomSheet } from "../../src/components/ui/BottomSheet/BottomSheet";
+
+import { useState } from 'react';
+
 import Logo from '@/assets/images/Logo10.png';
 
-import { LinearGradient } from 'expo-linear-gradient';
-
-
 export default function Perfil () {
+
+    const [editarVisible, setEditarVisible] = useState(false);
+    const [seguidoresVisible, setSeguidoresVisible] = useState(false);
+    const [seguidosVisible, setSeguidosVisible] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+
+    const [origen, setOrigen] = useState({
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+    });
 
     return (
         <View style={styles.Fondo}>
@@ -27,7 +45,9 @@ export default function Perfil () {
                         />
                     </View>
                     <View style={styles.BotonesHeader}>
-                        <Ionicons name="notifications-outline" size={24} color="#fff" style={{marginRight: 16}} />
+                        <Pressable onPress={() => setShowNotifications(true)}>
+                          <Ionicons name="notifications-outline" size={24} color="#fff" style={{marginRight: 16}} />
+                        </Pressable>
                         <Ionicons name="ellipsis-horizontal" size={24} color="#fff" />
                     </View>
                 </View>
@@ -59,7 +79,10 @@ export default function Perfil () {
                         end={{x: 1, y: 1}}
                         style={styles.BotonEditar}
                     >
-                        <Pressable style={styles.BotonEditar}>
+                        <Pressable 
+                            style={styles.BotonEditar}
+                            onPress={() => setEditarVisible(true)}
+                        >
                            <Text style={styles.TextoEditar}>Edit Profile</Text>
                         </Pressable>
                     </LinearGradient>
@@ -69,11 +92,17 @@ export default function Perfil () {
                             <Text style={styles.Texto2}>1,247</Text>
                             <Text style={styles.Texto3}>Posts</Text>
                         </Pressable>
-                        <Pressable style={styles.Contenedor2}>
+                        <Pressable
+                         style={styles.Contenedor2}
+                         onPress={() => setSeguidoresVisible(true)}
+                        >
                             <Text style={styles.Texto2}>56.3K</Text>
                             <Text style={styles.Texto3}>Seguidores</Text>
                         </Pressable>
-                        <Pressable style={styles.Contenedor2}>
+                        <Pressable
+                         style={styles.Contenedor2}
+                         onPress={() => setSeguidosVisible(true)}
+                        >
                             <Text style={styles.Texto2}>412</Text>
                             <Text style={styles.Texto3}>Seguidos</Text>
                         </Pressable>
@@ -119,6 +148,27 @@ export default function Perfil () {
                     </Pressable>
                 </View>
             </ScrollView>
+
+            <BottomSheet
+              isVisible={showNotifications}
+              initialSnap={25}
+              showBlur={true}
+              onClose={() => setShowNotifications(false)}
+            >
+              <NotificationList />
+            </BottomSheet>
+            <Editar 
+                visible={editarVisible}
+                onClose={() => setEditarVisible(false)}
+            />
+            <Seguidores 
+                visible={seguidoresVisible}
+                onClose={() => setSeguidoresVisible(false)}
+            />
+            <Seguidos 
+                visible={seguidosVisible}
+                onClose={() => setSeguidosVisible(false)}
+            />
         </View>
     );
 }

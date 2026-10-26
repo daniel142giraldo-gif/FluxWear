@@ -15,16 +15,19 @@ import { NotificationList } from "../../src/components/notifications/Notificatio
 import { BottomSheet } from "../../src/components/ui/BottomSheet/BottomSheet";
 
 import Logo from '@/assets/images/Logo10.png';
+import { Calendario } from "@/components/IA/Modulos/SeccionCalendario";
+import { Closet } from "@/components/IA/Modulos/SeccionCloset";
 import PublicacionCard from "@/features/social/components/PublicacionCard";
 import { mockPublicaciones } from "@/features/social/data/mockPublicaciones";
 import { Publicacion } from "../../src/types/publicacion";
-;
 
 export default function Inicio() {
   const [publicaciones, setPublicaciones] =
     useState<Publicacion[]>(mockPublicaciones);
   const [showNotifications, setShowNotifications] = useState(false);
   const [busquedaVisible, setBusquedaVisible] = useState(false);
+  const [calendarioVisible, setCalendarioVisible] = useState(false);
+  const [closetVisible, setClosetVisible] = useState(false);
   const barraBusquedaRef = useRef<View>(null);
 
   const [origen, setOrigen] = useState({
@@ -144,18 +147,24 @@ export default function Inicio() {
                 <Text style={styles.TextoM}>Tu módulo inteligente</Text>
               </View>
               <View style={styles.InferiorModulo}>
-                <View style={styles.ContenedorMo}>
+                <Pressable
+                 style={styles.ContenedorMo}
+                 onPress={() => setClosetVisible(true)}
+                >
                   <Text style={styles.TextoM1}>Closet Inteligente</Text>
                   <View style={styles.CajaImagen}>
                     <Text></Text>
                   </View>
-                </View>
-                <View style={styles.ContenedorMo}>
+                </Pressable>
+                <Pressable 
+                  style={styles.ContenedorMo}
+                  onPress={() => setCalendarioVisible(true)}
+                >
                   <Text style={styles.TextoM1}>Calendario de outfits</Text>
                   <View style={styles.CajaImagen}>
                     <Text></Text>
                   </View>
-                </View>
+                </Pressable>
               </View>
             </View>
 
@@ -176,6 +185,14 @@ export default function Inicio() {
         visible={busquedaVisible}
         origen={origen}
         onClose={() => setBusquedaVisible(false)}
+      />
+      <Calendario 
+        visible={calendarioVisible}
+        onClose={() => setCalendarioVisible(false)}
+      />
+      <Closet 
+        visible={closetVisible}
+        onClose={() => setClosetVisible(false)}
       />
     </View>
   );

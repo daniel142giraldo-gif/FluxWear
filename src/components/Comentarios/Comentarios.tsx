@@ -1,14 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
 } from 'react-native';
 
-export const NotificationList = () => {
+export const Comentarios = () => {
 
     
   return (

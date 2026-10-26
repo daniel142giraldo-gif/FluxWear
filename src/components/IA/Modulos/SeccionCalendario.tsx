@@ -1,55 +1,68 @@
 import { Ionicons } from "@expo/vector-icons";
 
 import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 
-export const NotificationList = () => {
+type CalendarioProps = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export const Calendario = ({ visible, onClose }: CalendarioProps) => {
   return (
-    <ScrollView style={styles.Fondo} contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
-
-      <View style={styles.Header}>
-        <View style={styles.ContenedorIz}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onRequestClose={onClose}
+      statusBarTranslucent
+    >
+      <ScrollView style={styles.Fondo} contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
+  
+        <View style={styles.Header}>
+          <View style={styles.ContenedorIz}>
+            <Pressable onPress={onClose}>
+                <Ionicons name="chevron-back" size={35} color="#00d2ff" />
+            </Pressable>
+            <Text style={styles.Titulo}>Calendario de outfits</Text>
+          </View>
           <Pressable>
-              <Ionicons name="chevron-back" size={35} color="#00d2ff" />
-          </Pressable>
-          <Text style={styles.Titulo}>Calendario de outfits</Text>
-        </View>
-        <Pressable>
-          <Ionicons
-            name="notifications-outline"
-            size={26}
-            color="#fff"
-            style={{ marginRight: 16 }}
-          />
-        </Pressable>
-      </View>
-
-      <View style={styles.Seccion1}>
-        <Pressable style={styles.Calendario}>
-          <Pressable>
-            <Ionicons name="chevron-back" size={24} color="#ffffff" />
-          </Pressable>
-          <Text style={styles.TextoCalendario}>Todo</Text>
-          <Pressable>
-            <Ionicons name="chevron-back" size={24} color="#ffffff" />
-          </Pressable>
-        </Pressable>
-        <View style={styles.ContenedorBoton}>
-          <Pressable style={styles.Boton}>
-            <Text style={styles.TextoBoton}>Semana</Text>
-          </Pressable>
-          <Pressable style={styles.Boton}>
-            <Text style={styles.TextoBoton}>Mes</Text>
+            <Ionicons
+              name="notifications-outline"
+              size={26}
+              color="#fff"
+              style={{ marginRight: 16 }}
+            />
           </Pressable>
         </View>
-        
-      </View>
-    </ScrollView>
+  
+        <View style={styles.Seccion1}>
+          <Pressable style={styles.Calendario}>
+            <Pressable>
+              <Ionicons name="chevron-back" size={24} color="#ffffff" />
+            </Pressable>
+            <Text style={styles.TextoCalendario}>Octubre 2025</Text>
+            <Pressable>
+              <Ionicons name="chevron-back" size={24} color="#ffffff" />
+            </Pressable>
+          </Pressable>
+          <View style={styles.ContenedorBoton}>
+            <Pressable style={styles.Boton}>
+              <Text style={styles.TextoBoton}>Semana</Text>
+            </Pressable>
+            <Pressable style={styles.Boton}>
+              <Text style={styles.TextoBoton}>Mes</Text>
+            </Pressable>
+          </View>
+          
+        </View>
+      </ScrollView>
+    </Modal>
   );
 };
 
