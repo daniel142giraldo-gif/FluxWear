@@ -1,5 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
+
+import { Comentarios } from "./Comentarios";
 
 type ComentariosProps = {
   visible: boolean;
@@ -14,7 +22,7 @@ export const SeccionComentarios = ({ visible, onClose }: ComentariosProps) => {
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <ScrollView style={styles.Fondo} contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
+      <View style={styles.Fondo}>
   
         <View style={styles.Header}>
           <Pressable onPress={onClose}>
@@ -24,14 +32,16 @@ export const SeccionComentarios = ({ visible, onClose }: ComentariosProps) => {
           <View style={styles.Separacion} />
           <Text style={styles.ContadorComentarios}>0</Text>
         </View>
-      </ScrollView>
+        <Comentarios />
+      </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
   Fondo: { 
-    backgroundColor: "#080808"
+    backgroundColor: "#080808",
+    flex: 1,
   },
   Header: { 
     flexDirection: 'row', 

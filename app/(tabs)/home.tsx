@@ -98,17 +98,22 @@ export default function Inicio() {
                 <Text style={styles.Titulo1}>Wear</Text>
               </View>
 
-              <Pressable
-                style={styles.LogoCampana}
-                onPress={() => setShowNotifications(true)}
-              >
-                <Ionicons
-                  name="notifications-outline"
-                  size={26}
-                  color="#fff"
-                  style={{ marginRight: 16 }}
-                />
-              </Pressable>
+              <View style={styles.ContenedorBotones}>
+                <Pressable style={styles.BotonPublicar}>
+                  <Ionicons name="add" size={22} color="#fff" />
+                </Pressable>
+                <Pressable
+                  style={styles.LogoCampana}
+                  onPress={() => setShowNotifications(true)}
+                >
+                  <Ionicons
+                    name="notifications-outline"
+                    size={24}
+                    color="#fff"
+                    style={{ marginRight: 16 }}
+                  />
+                </Pressable>
+              </View>
             </View>
 
             <Pressable 
@@ -233,9 +238,26 @@ const styles = StyleSheet.create({
     color: "#00d2ff",
     letterSpacing: 0.5,
   },
+  ContenedorBotones: {
+    width: "23%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 15,
+    marginLeft: 50,
+  },
+  BotonPublicar: {
+    borderWidth: 2,
+    borderColor: "#00d2ff",
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   LogoCampana: {
-    marginTop: 10,
-    height: 26,
+    width: "50%",
+    height: "100%"
   },
   SeccionBusqueda: {
     marginLeft: 20,

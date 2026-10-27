@@ -60,8 +60,7 @@ export const Comentarios = () => {
 const styles = StyleSheet.create({
   Fondo: { 
     backgroundColor: "#080808",
-    flexDirection: "column",
-    justifyContent: "space-between",
+    flex: 1,
   },
   Contenedor: { 
     flexDirection: 'row', 
