@@ -14,7 +14,10 @@ import {
 import { NotificationList } from "../../src/components/notifications/NotificationList";
 import { BottomSheet } from "../../src/components/ui/BottomSheet/BottomSheet";
 
-import Logo from '@/assets/images/Logo10.png';
+import Logo from "@/assets/images/Logo10.png";
+import Titulo from "@/assets/images/Titulo.png";
+
+import { Camara } from "@/components/Camaras/CamaraPublicaciones";
 import { Calendario } from "@/components/IA/Modulos/SeccionCalendario";
 import { Closet } from "@/components/IA/Modulos/SeccionCloset";
 import PublicacionCard from "@/features/social/components/PublicacionCard";
@@ -28,6 +31,7 @@ export default function Inicio() {
   const [busquedaVisible, setBusquedaVisible] = useState(false);
   const [calendarioVisible, setCalendarioVisible] = useState(false);
   const [closetVisible, setClosetVisible] = useState(false);
+  const [camaraVisible, setCamaraVisible] = useState(false);
   const barraBusquedaRef = useRef<View>(null);
 
   const [origen, setOrigen] = useState({
@@ -38,12 +42,10 @@ export default function Inicio() {
   });
 
   const abrirBusqueda = () => {
-    barraBusquedaRef.current?.measureInWindow(
-      (x, y, width, height) => {
-        setOrigen({ x, y, width, height });
-        setBusquedaVisible(true);
-      },
-    );
+    barraBusquedaRef.current?.measureInWindow((x, y, width, height) => {
+      setOrigen({ x, y, width, height });
+      setBusquedaVisible(true);
+    });
   };
 
   const handleLike = (id: string) => {
@@ -94,12 +96,14 @@ export default function Inicio() {
           <>
             <View style={styles.Superior}>
               <View style={styles.CajaTitulo}>
-                <Text style={styles.Titulo}>Flux</Text>
-                <Text style={styles.Titulo1}>Wear</Text>
+                <Image source={Titulo} style={styles.Titulo} />
               </View>
 
               <View style={styles.ContenedorBotones}>
-                <Pressable style={styles.BotonPublicar}>
+                <Pressable
+                  onPress={() => setCamaraVisible(true)}
+                  style={styles.BotonPublicar}
+                >
                   <Ionicons name="add" size={22} color="#fff" />
                 </Pressable>
                 <Pressable
@@ -116,17 +120,13 @@ export default function Inicio() {
               </View>
             </View>
 
-            <Pressable 
+            <Pressable
               style={styles.SeccionBusqueda}
               ref={barraBusquedaRef}
               onPress={abrirBusqueda}
             >
               <View>
-                <Image
-                  source={Logo}
-                  style={styles.Logo}
-                  resizeMode="cover"
-                />
+                <Image source={Logo} style={styles.Logo} resizeMode="cover" />
               </View>
               <View style={styles.ContenedorBusqueda}>
                 <Pressable style={styles.ContenedorLogo}>
@@ -153,15 +153,15 @@ export default function Inicio() {
               </View>
               <View style={styles.InferiorModulo}>
                 <Pressable
-                 style={styles.ContenedorMo}
-                 onPress={() => setClosetVisible(true)}
+                  style={styles.ContenedorMo}
+                  onPress={() => setClosetVisible(true)}
                 >
                   <Text style={styles.TextoM1}>Closet Inteligente</Text>
                   <View style={styles.CajaImagen}>
                     <Text></Text>
                   </View>
                 </Pressable>
-                <Pressable 
+                <Pressable
                   style={styles.ContenedorMo}
                   onPress={() => setCalendarioVisible(true)}
                 >
@@ -173,8 +173,7 @@ export default function Inicio() {
               </View>
             </View>
 
-            <View style={styles.SeccionParaTi}>
-            </View>
+            <View style={styles.SeccionParaTi}></View>
           </>
         }
       />
@@ -191,14 +190,12 @@ export default function Inicio() {
         origen={origen}
         onClose={() => setBusquedaVisible(false)}
       />
-      <Calendario 
+      <Calendario
         visible={calendarioVisible}
         onClose={() => setCalendarioVisible(false)}
       />
-      <Closet 
-        visible={closetVisible}
-        onClose={() => setClosetVisible(false)}
-      />
+      <Closet visible={closetVisible} onClose={() => setClosetVisible(false)} />
+      <Camara visible={camaraVisible} onClose={() => setCamaraVisible(false)} />
     </View>
   );
 }
@@ -222,21 +219,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginLeft: "33%",
     height: 70,
-    
   },
   Titulo: {
-    marginTop: 25,
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#ffffff",
-    letterSpacing: 0.5,
-  },
-  Titulo1: {
-    marginTop: 25,
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#00d2ff",
-    letterSpacing: 0.5,
+    width: 130,
+    height: 80,
   },
   ContenedorBotones: {
     width: "23%",
@@ -257,7 +243,7 @@ const styles = StyleSheet.create({
   },
   LogoCampana: {
     width: "50%",
-    height: "100%"
+    height: "100%",
   },
   SeccionBusqueda: {
     marginLeft: 20,
