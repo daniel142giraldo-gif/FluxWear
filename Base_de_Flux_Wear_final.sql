@@ -61,7 +61,7 @@ ALTER TABLE usuarios MODIFY biografia   VARCHAR(255) NULL;
 insert into usuarios (nombre, nombre_usuario, correo, password, telefono, fecha_nacimiento, peso, estatura)
 values ('Daniel Giraldo','Mono777','mono@gmail.com','123','+573026000260','2003-05-12','58.8','1.75');
 insert into verificaciones (id_usuario, red_social, enlace_perfil, seguidores_externos)
-values (3,'instagram','https://instagram.com/mono777', 25000);
+values (1,'instagram','https://instagram.com/mono777', 25000);
 
 		select v.id_verificacion, u.nombre_usuario, v.red_social, v.enlace_perfil, v.seguidores_externos
 		from verificaciones v
@@ -71,7 +71,7 @@ values (3,'instagram','https://instagram.com/mono777', 25000);
 
 update verificaciones 
 set estado = 'aprobada', fecha_respuesta = now()
-where id_verificacion = 1;
+where id_verificacion = 3;
 
 update usuarios set verificado = true where id_usuario = 1;
 
