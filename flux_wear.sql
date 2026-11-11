@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-11-2026 a las 04:45:06
+-- Tiempo de generación: 10-11-2026 a las 04:13:49
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -32,6 +32,16 @@ CREATE TABLE `bloqueos` (
   `id_bloqueado` int(11) NOT NULL,
   `fecha` timestamp NOT NULL DEFAULT current_timestamp()
 ) ;
+
+--
+-- Disparadores `bloqueos`
+--
+DELIMITER $$
+CREATE TRIGGER `trg_bloqueo_quita_seguimientos` AFTER INSERT ON `bloqueos` FOR EACH ROW delete from seguidores 
+where (id_seguidor = new.id_bloqueador and id_seguido = new.id_bloqueado)
+or (id_seguidor = new.id_bloqueado and id_seguido = new.id_bloqueador)
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -72,6 +82,13 @@ CREATE TABLE `comentarios` (
   `fecha` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `comentarios`
+--
+
+INSERT INTO `comentarios` (`id_comentario`, `id_publicacion`, `id_usuario`, `texto`, `fecha`) VALUES
+(1, 1, 2, '¡Me encanta ese look!', '2026-11-10 03:11:12');
+
 -- --------------------------------------------------------
 
 --
@@ -84,6 +101,13 @@ CREATE TABLE `compartidos` (
   `id_publicacion` int(11) NOT NULL,
   `fecha` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `compartidos`
+--
+
+INSERT INTO `compartidos` (`id_compartido`, `id_usuario`, `id_publicacion`, `fecha`) VALUES
+(1, 2, 1, '2026-11-10 03:11:17');
 
 -- --------------------------------------------------------
 
@@ -122,6 +146,13 @@ CREATE TABLE `favoritos` (
   `fecha` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `favoritos`
+--
+
+INSERT INTO `favoritos` (`id_usuario`, `id_publicacion`, `fecha`) VALUES
+(2, 1, '2026-11-10 03:11:10');
+
 -- --------------------------------------------------------
 
 --
@@ -133,6 +164,13 @@ CREATE TABLE `likes` (
   `id_publicacion` int(11) NOT NULL,
   `fecha` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `likes`
+--
+
+INSERT INTO `likes` (`id_usuario`, `id_publicacion`, `fecha`) VALUES
+(2, 1, '2026-11-10 03:11:07');
 
 -- --------------------------------------------------------
 
@@ -154,7 +192,45 @@ CREATE TABLE `mensajes` (
 --
 
 INSERT INTO `mensajes` (`id_mensaje`, `id_emisor`, `id_receptor`, `texto`, `leido`, `fecha`) VALUES
-(1, 1, 2, 'Hola Sofía', 0, '2026-11-05 02:46:51');
+(1, 2, 1, 'Hola, ¿donde compro los jeans que tienes?👖', 0, '2026-11-10 03:08:47'),
+(2, 1, 2, 'Hola, los compre en el centro comercial estan baratos', 0, '2026-11-10 03:08:47'),
+(3, 2, 1, 'Muchas Gracias, me gusto su outfit', 0, '2026-11-10 03:08:47'),
+(4, 2, 1, 'Hola, ¿donde compro los jeans que tienes?👖', 0, '2026-11-10 03:08:58'),
+(5, 1, 2, 'Hola, los compre en el centro comercial estan baratos', 0, '2026-11-10 03:08:58'),
+(6, 2, 1, 'Muchas Gracias, me gusto su outfit', 0, '2026-11-10 03:08:58'),
+(7, 2, 1, 'Hola, ¿donde compro los jeans que tienes?👖', 0, '2026-11-10 03:09:00'),
+(8, 1, 2, 'Hola, los compre en el centro comercial estan baratos', 0, '2026-11-10 03:09:00'),
+(9, 2, 1, 'Muchas Gracias, me gusto su outfit', 0, '2026-11-10 03:09:00');
+
+--
+-- Disparadores `mensajes`
+--
+DELIMITER $$
+CREATE TRIGGER `trg_validar_mensaje` BEFORE INSERT ON `mensajes` FOR EACH ROW begin 
+	if exists(
+		select 1 from bloqueos 
+		where (id_bloqueador = new.id_emisor and id_bloqueado = new.id_receptor)
+			or (id_bloqueador = new.id_receptor and id_bloqueado = new.id_emisor)
+	) then
+		signal sqlstate '45000'
+			set message_text = 'No puedes enviar mensajes a este usuario';
+		end if;
+        
+        if(select perfil_restringido from usuarios where id_usuario = new.id_receptor) = true
+			and not exists (
+				select 1 from seguidores 
+				where id_seguidores = new.id_receptor and id_seguido = new.id_emisor
+            )
+            and not exists (
+				select 1 from mensajes
+				where id_emisor = new.id_receptor and id_receptor  = new.id_emisor
+            )then
+            signal sqlstate '45000'
+				set message_text = 'Este usuario solo recibe mensajes de personas que sigue'; 
+			end if;
+		end
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -200,8 +276,7 @@ CREATE TABLE `outfits` (
 --
 
 INSERT INTO `outfits` (`id_outfit`, `id_usuario`, `id_estilos`, `nombre`, `ocasion`, `descripcion`, `fecha`) VALUES
-(1, 1, 1, 'Look casual de diario', 'diario', 'Basico y comodo para el dia a dia', '2026-11-05 02:43:20'),
-(2, 1, NULL, 'Outfit temporal', NULL, NULL, '2026-11-05 02:43:42');
+(1, 1, 1, 'Look casual de diario', 'diario', 'Basico y comodo para el dia a dia', '2026-11-10 03:00:14');
 
 -- --------------------------------------------------------
 
@@ -221,10 +296,7 @@ CREATE TABLE `outfit_prendas` (
 INSERT INTO `outfit_prendas` (`id_outfit`, `id_prenda`) VALUES
 (1, 1),
 (1, 2),
-(1, 3),
-(1, 4),
-(1, 5),
-(1, 6);
+(1, 3);
 
 -- --------------------------------------------------------
 
@@ -250,12 +322,13 @@ CREATE TABLE `prendas` (
 --
 
 INSERT INTO `prendas` (`id_prenda`, `id_usuario`, `id_categoria`, `nombre`, `color`, `marca`, `talla`, `temporada`, `imagen`, `fecha`) VALUES
-(1, 1, 1, 'Camiseta blanca basica', 'blanco', 'Nike', 'M', 'todo el año', NULL, '2026-11-05 02:41:57'),
-(2, 1, 2, 'Jeans azules', 'azul', 'Levis', '30', 'todo el año', NULL, '2026-11-05 02:41:57'),
-(3, 1, 5, 'Tenis blancos', 'blanco', 'Adidas', '41', 'todo el año', NULL, '2026-11-05 02:41:57'),
-(4, 1, 1, 'Camiseta blanca basica', 'blanco', 'Nike', 'M', 'todo el año', NULL, '2026-11-05 02:42:03'),
-(5, 1, 2, 'Jeans azules', 'azul', 'Levis', '30', 'todo el año', NULL, '2026-11-05 02:42:03'),
-(6, 1, 5, 'Tenis blancos', 'blanco', 'Adidas', '41', 'todo el año', NULL, '2026-11-05 02:42:03');
+(1, 1, 1, 'Camiseta blanca basica', 'blanco', 'Nike', 'M', 'todo el año', NULL, '2026-11-10 03:00:14'),
+(2, 1, 2, 'Jeans azules', 'azul', 'Levis', '30', 'todo el año', NULL, '2026-11-10 03:00:14'),
+(3, 1, 5, 'Tenis blancos', 'blanco', 'Adidas', '41', 'todo el año', NULL, '2026-11-10 03:00:14'),
+(4, 1, 1, 'Camiseta blanca basica', 'blanco', 'Nike', 'M', 'todo el año', NULL, '2026-11-10 03:03:42'),
+(5, 1, 2, 'Jeans azules', 'azul', 'Levis', '30', 'todo el año', NULL, '2026-11-10 03:03:42'),
+(6, 1, 5, 'Tenis blancos', 'blanco', 'Adidas', '41', 'todo el año', NULL, '2026-11-10 03:03:42'),
+(7, 1, 4, 'Caqueta de cuero negra', 'negro', 'Zara', 'M', 'todo el año', NULL, '2026-11-10 03:06:49');
 
 -- --------------------------------------------------------
 
@@ -267,6 +340,36 @@ CREATE TABLE `prenda_temporadas` (
   `id_prenda` int(11) NOT NULL,
   `id_temporada` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `prenda_temporadas`
+--
+
+INSERT INTO `prenda_temporadas` (`id_prenda`, `id_temporada`) VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(1, 4),
+(2, 1),
+(2, 2),
+(2, 3),
+(2, 4),
+(3, 1),
+(3, 2),
+(3, 3),
+(3, 4),
+(4, 1),
+(4, 2),
+(4, 3),
+(4, 4),
+(5, 1),
+(5, 2),
+(5, 3),
+(5, 4),
+(6, 1),
+(6, 2),
+(6, 3),
+(6, 4);
 
 -- --------------------------------------------------------
 
@@ -290,31 +393,10 @@ CREATE TABLE `publicaciones` (
 --
 
 INSERT INTO `publicaciones` (`id_publicacion`, `id_usuario`, `id_outfit`, `id_estilos`, `texto`, `anclada`, `fecha`, `fecha_edicion`) VALUES
-(1, 1, 1, 1, 'Mi outfit favorito para el dia a dia', 0, '2026-11-05 02:44:27', NULL),
-(2, 1, NULL, 3, 'Nuevo look urbano para el fin de semana', 0, '2026-11-05 02:44:30', NULL),
-(3, 2, NULL, 1, 'Outfit casuala para la universidad', 0, '2026-11-05 02:45:56', NULL),
-(4, 2, NULL, 6, 'Look elegante para una cena', 0, '2026-11-05 02:46:01', NULL),
-(5, 1, 1, 1, 'Mi outfit favorito para el dia a dia', 0, '2026-11-05 02:49:29', NULL);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `seguidores`
---
-
-CREATE TABLE `seguidores` (
-  `id_seguidor` int(11) NOT NULL,
-  `id_seguido` int(11) NOT NULL,
-  `fecha` timestamp NOT NULL DEFAULT current_timestamp()
-) ;
-
---
--- Volcado de datos para la tabla `seguidores`
---
-
-INSERT INTO `seguidores` (`id_seguidor`, `id_seguido`, `fecha`) VALUES
-(2, 1, '2026-11-05 02:46:44'),
-(3, 1, '2026-11-05 02:50:22');
+(1, 1, 1, 1, 'Mi outfit favorito para el dia a dia', 0, '2026-11-10 03:07:37', NULL),
+(2, 1, NULL, 3, 'Nuevo look urbano para el fin de semana', 0, '2026-11-10 03:07:41', NULL),
+(3, 3, NULL, 1, 'Outfit casuala para la universidad', 0, '2026-11-10 03:10:55', NULL),
+(4, 3, NULL, 6, 'Look elegante para una cena', 0, '2026-11-10 03:11:02', NULL);
 
 -- --------------------------------------------------------
 
@@ -326,6 +408,16 @@ CREATE TABLE `temporadas` (
   `id_temporada` int(11) NOT NULL,
   `nombre` varchar(40) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `temporadas`
+--
+
+INSERT INTO `temporadas` (`id_temporada`, `nombre`) VALUES
+(2, 'Invierno'),
+(3, 'Otoño'),
+(4, 'Primavera'),
+(1, 'Verano');
 
 -- --------------------------------------------------------
 
@@ -354,9 +446,9 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `nombre`, `nombre_usuario`, `correo`, `password`, `telefono`, `fecha_nacimiento`, `peso`, `estatura`, `verificado`, `foto_perfil`, `biografia`, `fecha_registro`) VALUES
-(1, 'Daniel Giraldo', 'Mono777', 'mono@gmail.com', '123', '+573026000260', '2003-05-12', 58.80, 1.75, 1, NULL, NULL, '2026-11-05 02:39:58'),
-(2, 'Sofía Ruiz', 'sofi_look', 'sofia@ejemplo.com', '123', '+573000000002', '2001-03-08', 55.00, 1.62, 0, NULL, NULL, '2026-11-05 02:45:50'),
-(3, 'Thomas', 'Alguien', 'thomas@gmail.com', '321', '+573204608293', '2007-09-20', 64.30, 1.74, 0, NULL, NULL, '2026-11-05 02:50:18');
+(1, 'Daniel Giraldo', 'Mono777', 'mono@gmail.com', '123', '+573026000260', '2003-05-12', 58.80, 1.75, 1, NULL, NULL, '2026-11-10 03:00:14'),
+(2, 'Thomas', 'Alguien', 'thomas@gmail.com', '321', '+573204608293', '2007-09-20', 64.30, 1.74, 0, NULL, NULL, '2026-11-10 03:04:53'),
+(3, 'Sofía Ruiz', 'sofi_look', 'sofia@ejemplo.com', '123', '+573000000002', '2001-03-08', 55.00, 1.62, 0, NULL, NULL, '2026-11-10 03:10:48');
 
 -- --------------------------------------------------------
 
@@ -400,8 +492,7 @@ CREATE TABLE `verificaciones` (
 --
 
 INSERT INTO `verificaciones` (`id_verificacion`, `id_usuario`, `red_social`, `enlace_perfil`, `seguidores_externos`, `estado`, `motivo_rechazo`, `fecha_solicitud`, `fecha_respuesta`) VALUES
-(2, 3, 'instagram', 'https://instagram.com/mono777', 25000, 'pendiente', NULL, '2026-11-05 02:50:59', NULL),
-(3, 1, 'instagram', 'https://instagram.com/mono777', 25000, 'aprobada', NULL, '2026-11-05 02:51:30', '2026-11-05 02:52:06');
+(1, 1, 'instagram', 'https://instagram.com/mono777', 25000, 'pendiente', NULL, '2026-11-10 03:00:14', NULL);
 
 --
 -- Disparadores `verificaciones`
@@ -525,13 +616,6 @@ ALTER TABLE `publicaciones`
   ADD KEY `id_estilos` (`id_estilos`);
 
 --
--- Indices de la tabla `seguidores`
---
-ALTER TABLE `seguidores`
-  ADD PRIMARY KEY (`id_seguidor`,`id_seguido`),
-  ADD KEY `id_seguido` (`id_seguido`);
-
---
 -- Indices de la tabla `temporadas`
 --
 ALTER TABLE `temporadas`
@@ -575,13 +659,13 @@ ALTER TABLE `categorias_prenda`
 -- AUTO_INCREMENT de la tabla `comentarios`
 --
 ALTER TABLE `comentarios`
-  MODIFY `id_comentario` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_comentario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `compartidos`
 --
 ALTER TABLE `compartidos`
-  MODIFY `id_compartido` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_compartido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `estilos`
@@ -605,25 +689,25 @@ ALTER TABLE `multimedia`
 -- AUTO_INCREMENT de la tabla `outfits`
 --
 ALTER TABLE `outfits`
-  MODIFY `id_outfit` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_outfit` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `prendas`
 --
 ALTER TABLE `prendas`
-  MODIFY `id_prenda` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_prenda` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `publicaciones`
 --
 ALTER TABLE `publicaciones`
-  MODIFY `id_publicacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_publicacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `temporadas`
 --
 ALTER TABLE `temporadas`
-  MODIFY `id_temporada` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_temporada` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
@@ -635,7 +719,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `verificaciones`
 --
 ALTER TABLE `verificaciones`
-  MODIFY `id_verificacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_verificacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Restricciones para tablas volcadas
@@ -724,13 +808,6 @@ ALTER TABLE `publicaciones`
   ADD CONSTRAINT `publicaciones_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE,
   ADD CONSTRAINT `publicaciones_ibfk_2` FOREIGN KEY (`id_outfit`) REFERENCES `outfits` (`id_outfit`) ON DELETE SET NULL,
   ADD CONSTRAINT `publicaciones_ibfk_3` FOREIGN KEY (`id_estilos`) REFERENCES `estilos` (`id_estilos`) ON DELETE SET NULL;
-
---
--- Filtros para la tabla `seguidores`
---
-ALTER TABLE `seguidores`
-  ADD CONSTRAINT `seguidores_ibfk_1` FOREIGN KEY (`id_seguidor`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE,
-  ADD CONSTRAINT `seguidores_ibfk_2` FOREIGN KEY (`id_seguido`) REFERENCES `usuarios` (`id_usuario`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `usuario_estilos`
