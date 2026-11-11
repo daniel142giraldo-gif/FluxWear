@@ -61,7 +61,7 @@ ALTER TABLE usuarios MODIFY biografia   VARCHAR(255) NULL;
 insert into usuarios (nombre, nombre_usuario, correo, password, telefono, fecha_nacimiento, peso, estatura)
 values ('Daniel Giraldo','Mono777','mono@gmail.com','123','+573026000260','2003-05-12','58.8','1.75');
 insert into verificaciones (id_usuario, red_social, enlace_perfil, seguidores_externos)
-values (1,'instagram','https://instagram.com/mono777', 25000);
+values (3,'instagram','https://instagram.com/mono777', 25000);
 
 		select v.id_verificacion, u.nombre_usuario, v.red_social, v.enlace_perfil, v.seguidores_externos
 		from verificaciones v
@@ -71,7 +71,7 @@ values (1,'instagram','https://instagram.com/mono777', 25000);
 
 update verificaciones 
 set estado = 'aprobada', fecha_respuesta = now()
-where id_verificacion = 3;
+where id_verificacion = 1;
 
 update usuarios set verificado = true where id_usuario = 1;
 
@@ -873,3 +873,124 @@ values (
 );
 
 update usuarios set perfil_restringido = false where nombre_usuario = 'sofi_look';
+
+show create table mensajes;
+
+alter table mensajes drop constraint CONSTRAINT_1;
+
+drop trigger if exists trg_validar_mensaje;
+
+delimiter $$
+
+create trigger trg_validar_mensaje
+before insert on mensajes
+for each row
+begin 
+	if NEW.id_emisor = NEW.id_receptor then
+    set NEW.leido = TRUE;
+	else
+		if exists(
+        select 1 from bloqueos
+        where(id_bloqueador = NEW.id_emisor and id_bloqueado = NEW.id_receptor)
+			or(id_bloqueador = NEW.id_receptor and id_bloqueado = NEW.id_emisor)
+        ) then
+        signal sqlstate '45000'
+        set message_text = 'No puedes enviar mensajes a este usuario';
+        end if;
+        
+        if(select perfil_restringido from usuarios where id_usuario = NEW.id_receptor) = TRUE
+        and not exists(
+        select 1 from seguidores
+        where id_seguidor = NEW.id_receptor and id_seguido = NEW.id_emisor
+        )
+        and not exists (
+			select 1 from mensajes 
+            where id_emisor = NEW.id_receptor and id_receptor = NEW.id_emisor
+        ) then
+        signal sqlstate '45000'
+			set message_text = 'Este usuario solo recibe mensajes de personas que sigue';
+		end if;
+	end if;
+    end$$
+    
+    insert into mensajes (id_emisor, id_receptor,  texto)
+    values(
+		(select id_usuario from usuarios where nombre_usuario = 'Mono777'),
+        (select id_usuario from usuarios where nombre_usuario = 'Mono777'),
+        'Recordar: comprar jeans nuevos'
+    );
+    
+    select id_mensaje, texto, leido from mensajes where id_emisor = id_receptor;
+    
+alter table usuarios 
+modify telefono varchar(20) null,
+modify fecha_nacimiento date null,
+modify peso decimal(5,2) null,
+modify estatura decimal(3,2) null;
+
+USE Flux_Wear;
+
+drop trigger if exists trg_mensajes_antes_actualizar;
+
+DELIMITER $$
+
+create trigger trg_mensajes_antes_actualizar
+before update on mensajes
+for each row
+begin
+  if old.id_emisor <> old.id_receptor then
+    if binary new.texto <> binary old.texto
+       or new.id_emisor   <> old.id_emisor
+        or new.id_receptor <> old.id_receptor then
+      signal sqlstate '45000'
+        set message_text = 'Solo se pueden editar las notas personales';
+    end if;
+  else
+    if new.id_emisor <> new.id_receptor then
+      signal sqlstate '45000'
+        set message_text = 'Una nota personal no puede cambiar de destinatario';
+    end if;
+    if binary new.texto <> binary old.texto then
+      set new.fecha_edicion =now();
+    end if;
+  end if;
+end$$
+
+DELIMITER ;
+
+
+create or replace view v_publicaciones_resumen as
+select p.id_publicacion, p.id_usuario, p.id_outfit, p.id_estilos,
+       p.texto, p.anclada, p.fecha, p.fecha_edicion,
+  (select count(*) from likes       where id_publicacion = p.id_publicacion) as total_likes,
+  (select count(*) from comentarios where id_publicacion = p.id_publicacion) as total_comentarios,
+  (select count(*) from favoritos   where id_publicacion = p.id_publicacion) as total_favoritos,
+  (select count(*) from compartidos where id_publicacion = p.id_publicacion) as total_compartidos
+from  publicaciones p;
+
+		select * from v_publicaciones_resumen;
+show full tables where Table_type = 'VIEW';
+describe prendas;
+
+update mensajes set texto = 'Nota editada'
+where id_emisor = id_receptor
+  and id_emisor = (select id_usuario from usuarios where nombre_usuario = 'Mono777')
+limit 1;
+
+		select id_mensaje, texto, leido, fecha_edicion from mensajes where id_emisor = id_receptor;
+
+update mensajes set texto = 'Mensaje alterado' where id_emisor <> id_receptor limit 1;
+
+update mensajes set leido = true where id_emisor <> id_receptor limit 1;
+
+update mensajes
+set id_receptor = (select id_usuario from usuarios where nombre_usuario = 'Alguien')
+where id_emisor = id_receptor limit 1;
+
+
+set SQL_SAFE_UPDATES = 0;
+delete from usuarios;
+
+
+
+    
