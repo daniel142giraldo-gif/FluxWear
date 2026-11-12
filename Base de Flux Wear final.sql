@@ -828,7 +828,7 @@ where u.nombre_usuario = 'Alguien' and p.texto like 'Mi outfit favorito%';
 		join usuarios u on u.id_usuario = p.id_usuario
 		join estilos e  on e.id_estilos = p.id_estilos
 		where p.id_estilos in (
-				select p2.id_estilos from favoritos f
+				select p2.id_estilos from favoritos f 
 				join publicaciones p2 on p2.id_publicacion = f.id_publicacion
 				where f.id_usuario = (select id_usuario from usuarios where nombre_usuario = 'Alguien')
 				  and p2.id_estilos is not null
