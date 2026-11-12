@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from database.connection import get_db
 from Chat_Administracion.modelos import Mensaje, Usuario
@@ -18,9 +18,32 @@ router = APIRouter(
 def obtener_conversacion(
     id_usuario: int,
     otro_usuario: int,
+    pagina: int = Query(default=1, ge=1),
+    por_pagina: int = Query(default=20, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
-    mensajes = db.query(Mensaje).filter( 
+
+    usuario = db.query(Usuario).filter(
+        Usuario.id_usuario == id_usuario
+    ).first()
+
+    if not usuario:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario que realiza la busqueda no encontrado"
+        )
+
+    otro = db.query(Usuario).filter(
+        Usuario.id_usuario == otro_usuario
+    ).first()
+
+    if not otro:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario de la conversacion no encontrado"
+        )
+
+    filtro = (
         (
             (Mensaje.id_emisor == id_usuario) &
             (Mensaje.id_receptor == otro_usuario)
@@ -29,9 +52,38 @@ def obtener_conversacion(
             (Mensaje.id_emisor == otro_usuario) &
             (Mensaje.id_receptor == id_usuario)
         )
-    ).order_by(Mensaje.fecha.asc()).all()
 
-    return mensajes
+    )
+
+    total = db.query(Mensaje).filter(filtro).count()
+
+    offset = (pagina - 1) * por_pagina
+
+    mensajes = db.query(Mensaje).filter(
+        filtro
+    ).order_by(
+        Mensaje.fecha.desc(),
+        Mensaje.id_mensaje.desc()
+    ).offset(
+        offset
+    ).limit(
+        por_pagina
+    ).all()
+
+    mensajes.reverse()
+
+    total_paginas = (total + por_pagina - 1) // por_pagina
+
+    return {
+        "id_usuario": id_usuario,
+        "otro_usuario": otro_usuario,
+        "pagina": pagina,
+        "por_pagina": por_pagina,
+        "total_mensajes": total,
+        "total_paginas": total_paginas,
+        "hay_mas": pagina < total_paginas,
+        "mensajes": mensajes
+    }
 
 @router.post("/", response_model=MensajeRespuesta)
 def enviar_mensaje(
@@ -44,11 +96,31 @@ def enviar_mensaje(
             detail="No puedes enviarte mensajes a ti mismo"
         )
 
+    emisor = db.query(Usuario).filter(
+        Usuario.id_usuario == datos.id_emisor
+    ).first()
+    
+    if not emisor:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario emisor no encontrado"
+        )
+
     nuevo_mensaje = Mensaje(
         id_emisor=datos.id_emisor,
         id_receptor=datos.id_receptor,
         texto=datos.texto
     )
+
+    receptor = db.query(Usuario).filter(
+        Usuario.id_usuario == datos.id_receptor
+    ).first()
+
+    if not receptor:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario receptor no encontrado"
+        )
 
     db.add(nuevo_mensaje)
     db.commit()
@@ -108,7 +180,7 @@ def contar_mensajes_no_leidos(
 ):
     cantidad = db.query(Mensaje).filter(
         Mensaje.id_receptor == id_usuario,
-        Mensaje.leido == False
+        Mensaje.leido.is_(False)
     ).count()
 
     return {
@@ -119,6 +191,8 @@ def contar_mensajes_no_leidos(
 @router.get("/conversaciones/{id_usuario}")
 def obtener_conversaciones(
     id_usuario: int,
+    pagina: int = Query(default=1, ge=1),
+    por_pagina: int = Query(default=10, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
     # 1. Verificar que el usuario exista
@@ -206,4 +280,134 @@ def obtener_conversaciones(
             )
         })
 
-    return conversaciones
+    # 7. Calcular la paginación
+    total = len(conversaciones)
+
+    total_paginas = (total + por_pagina - 1) // por_pagina
+
+    offset = (pagina - 1) * por_pagina
+
+    conversaciones_paginadas = conversaciones[
+        offset:offset + por_pagina
+    ]
+
+    # 8. Devolver las conversaciones y sus datos de paginación
+    return {
+        "pagina": pagina,
+        "por_pagina": por_pagina,
+        "total_conversaciones": total,
+        "total_paginas": total_paginas,
+        "hay_mas": pagina < total_paginas,
+        "conversaciones": conversaciones_paginadas
+    }
+
+@router.get("/buscar-usuarios/{id_usuario}")
+def buscar_usuarios(
+    id_usuario: int,
+    q: str,
+    db: Session = Depends(get_db)
+):
+
+    busqueda = q.strip()
+
+    print("Base de datos:", db.bind.url.database)
+    print("Texto recibido:", repr(busqueda))
+    
+    todos = db.query(Usuario).all()
+    
+    for u in todos:
+        print(u.id_usuario, u.nombre, u.nombre_usuario)
+
+    if not busqueda: 
+        raise HTTPException(
+            status_code=400,
+            detail="Debes escribir un nombre o nombre de usuario"
+        )
+
+    usuario = db.query(Usuario).filter(
+        Usuario.id_usuario == id_usuario
+    ).first()
+
+    if not usuario:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario que realiza la búsqueda no encontrado"
+        )
+
+    usuarios = db.query(Usuario).filter(
+        Usuario.id_usuario != id_usuario,
+        or_(
+            func.lower(Usuario.nombre).like(f"%{busqueda.lower()}%"),
+            func.lower(Usuario.nombre_usuario).like(f"%{busqueda.lower()}%")
+        )
+    ).order_by(
+        Usuario.nombre.asc()
+    ).limit(20).all()
+
+    return [
+        {
+            "id_usuario": u.id_usuario,
+            "nombre": u.nombre,
+            "nombre_usuario": u.nombre_usuario,
+            "foto_perfil": u.foto_perfil,
+
+        }
+        for u in usuarios
+    ]
+
+@router.get("/buscar_mensajes/{id_usuario}/{otro_usuario}", response_model=list[MensajeRespuesta])
+def buscar_mensajes(
+    id_usuario: int,
+    otro_usuario: int,
+    q: str,
+    db: Session = Depends(get_db)
+):
+
+    busqueda = q.strip()
+
+    if not busqueda:
+        raise HTTPException(
+            status_code=400,
+            detail="Debes escribir una palabra o frase para buscar"
+        )
+
+    usuario = db.query(Usuario).filter(
+        Usuario.id_usuario == id_usuario
+    ).first()
+
+    if not usuario:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario que realiza la busqueda no encontrado"
+        )
+
+    otro = db.query(Usuario).filter(
+        Usuario.id_usuario == otro_usuario
+    ).first()
+
+    if not otro:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario de la conversacion no encontrado"
+        )
+
+    mensajes = db.query(Mensaje).filter(
+        (
+            (Mensaje.id_emisor == id_usuario) &
+            (Mensaje.id_receptor == otro_usuario)
+        ) |
+        (
+            (Mensaje.id_emisor == otro_usuario) &
+            (Mensaje.id_receptor == id_usuario)
+        ),
+
+        func.lower(Mensaje.texto).like(
+            f"%{busqueda.lower()}%"
+        )
+
+    ).order_by(
+        Mensaje.fecha.desc(),
+        Mensaje.id_mensaje.desc()
+    ).all()
+
+    return mensajes
