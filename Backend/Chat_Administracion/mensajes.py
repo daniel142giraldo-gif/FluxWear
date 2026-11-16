@@ -1,9 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, and_
+from datetime import datetime, timedelta
 
 from database.connection import get_db
-from Chat_Administracion.modelos import Mensaje, Usuario
+from Chat_Administracion.modelos import (
+    Mensaje, 
+    Usuario,
+    MensajeUsuario
+)
 from Chat_Administracion.schemas.mensaje import (
     MensajeCrear,
     MensajeRespuesta
@@ -55,13 +60,25 @@ def obtener_conversacion(
 
     )
 
-    total = db.query(Mensaje).filter(filtro).count()
+    consulta = db.query(Mensaje).outerjoin(
+        MensajeUsuario,
+        and_(
+            MensajeUsuario.id_mensaje == Mensaje.id_mensaje,
+            MensajeUsuario.id_usuario == id_usuario
+        )
+    ).filter(
+        filtro,
+        or_(
+            MensajeUsuario.id_mensaje.is_(None),
+            MensajeUsuario.oculto.is_(False)
+        )
+    )
+
+    total = consulta.count()
 
     offset = (pagina - 1) * por_pagina
 
-    mensajes = db.query(Mensaje).filter(
-        filtro
-    ).order_by(
+    mensajes = consulta.order_by(
         Mensaje.fecha.desc(),
         Mensaje.id_mensaje.desc()
     ).offset(
@@ -71,6 +88,18 @@ def obtener_conversacion(
     ).all()
 
     mensajes.reverse()
+
+    mensajes_respuesta = []
+
+    for mensaje in mensajes:
+        datos = MensajeRespuesta.model_validate(
+            mensaje
+        ).model_dump()
+
+        if mensaje.eliminado_para_todos:
+            datos["texto"] = "Este mensaje fue eliminado"
+
+            mensajes_respuesta.append(datos)
 
     total_paginas = (total + por_pagina - 1) // por_pagina
 
@@ -90,11 +119,6 @@ def enviar_mensaje(
     datos: MensajeCrear,
     db: Session = Depends(get_db)
 ):
-    if datos.id_emisor == datos.id_receptor:
-        raise HTTPException(
-            status_code=400,
-            detail="No puedes enviarte mensajes a ti mismo"
-        )
 
     emisor = db.query(Usuario).filter(
         Usuario.id_usuario == datos.id_emisor
@@ -152,6 +176,9 @@ def marcar_mensaje_leido(
 
     mensaje.leido = True
 
+    if mensaje.fecha_leido is None:
+        mensaje.fecha_leido = func.now()
+
     db.commit()
     db.refresh(mensaje)
 
@@ -207,9 +234,21 @@ def obtener_conversaciones(
         )
 
     # 2. Buscar mensajes enviados y recibidos
-    mensajes = db.query(Mensaje).filter(
-        (Mensaje.id_emisor == id_usuario) |
-        (Mensaje.id_receptor == id_usuario)
+    mensajes = db.query(Mensaje).outerjoin(
+        MensajeUsuario,
+        and_(
+            MensajeUsuario.id_mensaje == Mensaje.id_mensaje,
+            MensajeUsuario.id_usuario == id_usuario
+        )
+    ).filter(
+        or_(
+            (Mensaje.id_emisor == id_usuario) |
+            (Mensaje.id_receptor == id_usuario)
+        ),
+        or_(
+            MensajeUsuario.id_mensaje.is_(None),
+            MensajeUsuario.oculto.is_(False)
+        )
     ).order_by(
         Mensaje.fecha.desc(),
         Mensaje.id_mensaje.desc()
@@ -232,9 +271,20 @@ def obtener_conversaciones(
     mensajes_no_leidos = db.query(
         Mensaje.id_emisor,
         func.count(Mensaje.id_mensaje).label("cantidad")
+    ).outerjoin(
+        MensajeUsuario,
+        and_(
+            MensajeUsuario.id_mensaje == Mensaje.id_mensaje,
+            MensajeUsuario.id_usuario == id_usuario
+        )
     ).filter(
         Mensaje.id_receptor == id_usuario,
-        Mensaje.leido.is_(False)
+        Mensaje.leido.is_(False),
+        Mensaje.eliminado_para_todos.is_(False),
+        or_(
+            MensajeUsuario.id_mensaje.is_(None),
+            MensajeUsuario.oculto.is_(False)
+        )
     ).group_by(
         Mensaje.id_emisor
     ).all()
@@ -266,12 +316,17 @@ def obtener_conversaciones(
         if not otro_usuario:
             continue
 
+        if mensaje.eliminado_para_todos:
+            ultimo_mensaje = "Este mensaje fue eliminado"
+        else:
+            ultimo_mensaje = mensaje.texto
+
         conversaciones.append({
             "id_usuario": otro_usuario.id_usuario,
             "nombre": otro_usuario.nombre,
             "nombre_usuario": otro_usuario.nombre_usuario,
             "foto_perfil": otro_usuario.foto_perfil,
-            "ultimo_mensaje": mensaje.texto,
+            "ultimo_mensaje": ultimo_mensaje,
             "fecha": mensaje.fecha,
             "id_mensaje": mensaje.id_mensaje,
             "leido": mensaje.leido,
@@ -309,9 +364,6 @@ def buscar_usuarios(
 ):
 
     busqueda = q.strip()
-
-    print("Base de datos:", db.bind.url.database)
-    print("Texto recibido:", repr(busqueda))
     
     todos = db.query(Usuario).all()
     
@@ -411,3 +463,224 @@ def buscar_mensajes(
     ).all()
 
     return mensajes
+
+@router.delete("/{id_mensaje}/para-mi/{id_usuario}")
+def eliminar_mensaje_para_mi(
+    id_mensaje: int,
+    id_usuario: int,
+    db: Session = Depends(get_db)
+):
+
+    mensaje = db.query(Mensaje).filter(
+        Mensaje.id_mensaje == id_mensaje
+    ).first()
+
+    if not mensaje:
+        raise HTTPException(
+            status_code=404,
+            detail="Mensaje no encontrado"
+        )
+
+    if id_usuario not in [mensaje.id_emisor, mensaje.id_receptor]:
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permiso para eliminar este mensaje"
+        )
+
+    registro = db.query(MensajeUsuario).filter(
+        MensajeUsuario.id_mensaje == id_mensaje,
+        MensajeUsuario.id_usuario == id_usuario
+    ).first()
+
+    ahora = datetime.now()
+    fecha_limite = ahora + timedelta(days=60)
+
+    if registro:
+        registro.oculto = True
+        registro.fecha_eliminacion = ahora
+        registro.fecha_limite_recuperacion = fecha_limite
+        registro.restaurable = (id_usuario == mensaje.id_emisor)
+
+    else:
+        registro = MensajeUsuario(
+            id_mensaje=id_mensaje,
+            id_usuario=id_usuario,
+            oculto=True,
+            fecha_eliminacion=ahora,
+            fecha_limite_recuperacion=fecha_limite,
+            restaurable=(id_usuario == mensaje.id_emisor)
+        )
+
+        db.add(registro)
+
+    db.commit()
+
+    return {
+        "mensaje": "Mensaje eliminado de tu conversacion",
+        "id_mensaje": id_mensaje,
+        "id_usuario": id_usuario,
+        "fecha_limite_recuperacion": fecha_limite
+    }
+
+@router.patch("/{id_mensaje}/restaurar-para-mi/{id_usuario}")
+def restaurar_mensajes_para_mi(
+    id_mensaje: int,
+    id_usuario: int,
+    db: Session = Depends(get_db)
+):
+    mensaje = db.query(Mensaje).filter(
+        Mensaje.id_mensaje == id_mensaje
+    ).first()
+
+    if not mensaje:
+        raise HTTPException(
+            status_code=404,
+            detail="Mensaje no encontrado"
+        )
+
+    if id_usuario not in [mensaje.id_emisor, mensaje.id_receptor]:
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permiso para restaurar este mensaje"
+        )
+
+    registro = db.query(MensajeUsuario).filter(
+        MensajeUsuario.id_mensaje == id_mensaje,
+        MensajeUsuario.id_usuario == id_usuario
+    ).first()
+
+    if not registro or not registro.oculto:
+        raise HTTPException(
+            status_code=404,
+            detail="No tienes un mensaje eliminado para restaurar"
+        )
+
+    if id_usuario != mensaje.id_emisor or not registro.restaurable:
+        raise HTTPException(
+            status_code=403,
+            detail="No puedes restaurar este mensaje"
+        )
+
+    ahora = datetime.now()
+
+    if (
+        registro.fecha_limite_recuperacion is None
+        or ahora > registro.fecha_limite_recuperacion
+    ):
+        raise HTTPException(
+            status_code=410,
+            detail="El plazo de recuperación de 60 dias ha expirado"
+        )
+
+    registro.oculto = False
+    registro.fecha_eliminacion = None
+    registro.fecha_limite_recuperacion = None
+    registro.restaurable = False
+
+    db.commit()
+
+    return {
+        "mensaje": "Mensaje restaurado correctamente",
+        "id_mensaje": id_mensaje,
+        "id_usuario": id_usuario
+    }
+
+@router.delete("/{id_mensaje}/para-todos/{id_usuario}")
+def eliminar_mensaje_para_todos(
+    id_mensaje: int,
+    id_usuario: int,
+    db: Session = Depends(get_db)
+):
+
+    mensaje = db.query(Mensaje).filter(
+        Mensaje.id_mensaje == id_mensaje
+    ).first()
+
+    if not mensaje:
+        raise HTTPException(
+            status_code=404,
+            detail="Mensaje no encontrado"
+        )
+
+    if id_usuario != mensaje.id_emisor:
+        raise HTTPException(
+            status_code=403,
+            detail="Solo el emisor puede eliminar el mensaje para todos"
+        )
+
+    if mensaje.eliminado_para_todos:
+        raise HTTPException(
+            status_code=409,
+            detail="Este mensaje ya fue eliminado para todos"
+        )
+
+    ahora = datetime.now()
+    fecha_limite = ahora + timedelta(days=60)
+
+    mensaje.eliminado_para_todos = True
+    mensaje.fecha_eliminacion_global = ahora
+    mensaje.fecha_limite_recuperacion = fecha_limite
+
+    db.commit()
+    db.refresh(mensaje)
+
+    return {
+        "mensaje": "Mensaje elimindo para todos correctamente",
+        "id_mensaje": id_mensaje,
+        "id_usuario": id_usuario,
+        "fecha_eliminacion_global": mensaje.fecha_eliminacion_global,
+        "fecha_limite_recuperacion": mensaje.fecha_limite_recuperacion
+    }
+
+@router.patch("/{id_mensaje}/restaurar-para-todos/{id_usuario}")
+def restaurar_mensaje_para_todos(
+    id_mensaje: int,
+    id_usuario: int,
+    db: Session = Depends(get_db)
+):
+
+    mensaje = db.query(Mensaje).filter(
+        Mensaje.id_mensaje == id_mensaje
+    ).first()
+
+    if not mensaje:
+        raise HTTPException(
+            status_code=404,
+            detail="Mensaje no encontrado"
+        )
+
+    if id_usuario != mensaje.id_emisor:
+        raise HTTPException(
+            status_code=403,
+            detail="Solo el emisor puede restaurar el mensaje"
+        )
+
+    if not mensaje.eliminado_para_todos:
+        raise HTTPException(
+            status_code=409,
+            detail="El mensaje no está eliminado para todos"
+        )
+
+    ahora = datetime.now()
+
+    if ( 
+        mensaje.fecha_limite_recuperacion is None
+        or ahora > mensaje.fecha_limite_recuperacion
+    ):
+        raise HTTPException(
+            status_code=410,
+            detail="El plazo maximo de recuperación de 60 días ha expirado"
+        )
+
+    mensaje.eliminado_para_todos = False
+    mensaje.fecha_eliminacion_global = None
+    mensaje.fecha_limite_recuperacion = None
+
+    db.commit()
+    db.refresh(mensaje)
+
+    return {
+        "mensaje": "Mensaje restaurado para todos correctamente",
+        "id_mensaje": id_mensaje,
+        "id_emisor": id_usuario,
+    }

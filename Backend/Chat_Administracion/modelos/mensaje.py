@@ -1,5 +1,4 @@
-from datetime import date, datetime
-from decimal import Decimal
+from datetime import datetime
 
 from sqlalchemy import (
     Integer,
@@ -21,10 +20,6 @@ class Mensaje(Base):
     __tablename__ = "mensajes"
 
     __table_args__ = (
-        CheckConstraint(
-            "id_emisor <> id_receptor",
-            name="check_emisor_receptor"
-        ),
         Index(
             "idx_conversacion",
             "id_emisor",
@@ -71,4 +66,35 @@ class Mensaje(Base):
         TIMESTAMP,
         server_default=text("CURRENT_TIMESTAMP"),
         nullable=False
+    )
+
+    fecha_edicion: Mapped[datetime | None] = mapped_column(
+        TIMESTAMP,
+        nullable=True
+    )
+
+    eliminado_para_todos: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        server_default=text("0")
+    )
+
+    fecha_eliminacion_global: Mapped[datetime | None] = mapped_column(
+        TIMESTAMP,
+        nullable=True
+    )
+
+    fecha_limite_recuperacion: Mapped[datetime | None] = mapped_column(
+        TIMESTAMP,
+        nullable=True
+    )
+
+    fecha_entregado: Mapped[datetime | None] = mapped_column(
+        TIMESTAMP,
+        nullable=True
+    )
+
+    fecha_leido: Mapped[datetime | None] = mapped_column(
+        TIMESTAMP,
+        nullable=True
     )
