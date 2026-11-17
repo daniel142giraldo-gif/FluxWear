@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
 from pwdlib import PasswordHash
 
 from app.database import get_db
-from app.models.usuario import Usuario
+from app.models.usuarios import Usuario
 from app.schemas.usuario import UsuarioCreate, UsuarioResponse
 
 
@@ -25,10 +27,16 @@ def registrar_usuario(
     db: Session = Depends(get_db)
 ):
     # Comprobar si el correo ya está registrado
+    filtros = [
+        Usuario.correo == datos.correo,
+        Usuario.nombre_usuario == datos.nombre_usuario
+    ]
+
+    if datos.telefono is not None:
+        filtros.append(Usuario.telefono == datos.telefono)
+
     usuario_existente = db.query(Usuario).filter(
-        (Usuario.correo == datos.correo) |
-        (Usuario.nombre_usuario == datos.nombre_usuario) |
-        (Usuario.telefono == datos.telefono)
+        or_(*filtros)
     ).first()
 
     if usuario_existente:
@@ -53,8 +61,17 @@ def registrar_usuario(
     )
 
     # Guardar en MariaDB
-    db.add(nuevo_usuario)
-    db.commit()
-    db.refresh(nuevo_usuario)
+    try:
+        db.add(nuevo_usuario)
+        db.commit()
+        db.refresh(nuevo_usuario)
+
+    except IntegrityError:
+        db.rollback()
+
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="El correo, nombre de usuario o teléfono ya está registrado"
+        )
 
     return nuevo_usuario

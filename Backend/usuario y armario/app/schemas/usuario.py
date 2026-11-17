@@ -9,11 +9,11 @@ class UsuarioCreate(BaseModel):
     nombre_usuario: str = Field(min_length=1, max_length=50)
     correo: str = Field(min_length=1, max_length=100)
     password: str = Field(min_length=8, max_length=255)
-    telefono: str = Field(min_length=1, max_length=20)
 
-    fecha_nacimiento: date
-    peso: Decimal = Field(gt=0, le=200)
-    estatura: Decimal = Field(gt=0, le=2.60)
+    telefono: str | None = Field(default=None, max_length=20)
+    fecha_nacimiento: date | None = None
+    peso: Decimal | None = Field(default=None, gt=0, le=200)
+    estatura: Decimal | None = Field(default=None, gt=0, le=2.60)
 
 
 class UsuarioResponse(BaseModel):
@@ -21,7 +21,7 @@ class UsuarioResponse(BaseModel):
     nombre: str
     nombre_usuario: str
     correo: str
-    telefono: str
+    telefono: str | None = None
 
     model_config = {
         "from_attributes": True

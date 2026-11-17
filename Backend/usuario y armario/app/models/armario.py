@@ -1,15 +1,15 @@
+
 from sqlalchemy import (
     Column,
     Integer,
     String,
-    Date,
-    DECIMAL,
     TIMESTAMP,
     ForeignKey,
     text
 )
 
 from app.database import Base
+
 
 class CategoriaPrenda(Base):
     __tablename__ = "categorias_prenda"
@@ -22,6 +22,7 @@ class CategoriaPrenda(Base):
 
     nombre = Column(String(40), nullable=False, unique=True)
 
+
 class Estilo(Base):
     __tablename__ = "estilos"
 
@@ -33,6 +34,7 @@ class Estilo(Base):
 
     nombre = Column(String(40), nullable=False, unique=True)
 
+
 class Temporada(Base):
     __tablename__ = "temporadas"
 
@@ -40,9 +42,10 @@ class Temporada(Base):
         Integer,
         primary_key=True,
         autoincrement=True
-    )    
-            
+    )
+
     nombre = Column(String(40), nullable=False, unique=True)
+
 
 class Prenda(Base):
     __tablename__ = "prendas"
@@ -51,20 +54,20 @@ class Prenda(Base):
         Integer,
         primary_key=True,
         autoincrement=True
-    )    
-            
+    )
+
     id_usuario = Column(
         Integer,
-        ForeignKey("usuarios.id_usuario"),
+        ForeignKey("usuarios.id_usuario", ondelete="CASCADE"),
         nullable=False
-    )    
-            
+    )
+
     id_categoria = Column(
         Integer,
         ForeignKey("categorias_prenda.id_categoria"),
         nullable=False
-    )    
-            
+    )
+
     nombre = Column(String(80), nullable=False)
     color = Column(String(30), nullable=True)
     marca = Column(String(50), nullable=True)
@@ -75,35 +78,36 @@ class Prenda(Base):
         TIMESTAMP,
         nullable=False,
         server_default=text("CURRENT_TIMESTAMP")
-    ) 
+    )
+
 
 class PrendaTemporada(Base):
     __tablename__ = "prenda_temporadas"
 
     id_prenda = Column(
         Integer,
-        ForeignKey("prendas.id_prenda"),
+        ForeignKey("prendas.id_prenda", ondelete="CASCADE"),
         primary_key=True
-    )    
-            
+    )
+
     id_temporada = Column(
         Integer,
-        ForeignKey("temporadas.id_temporadas"),
+        ForeignKey("temporadas.id_temporada", ondelete="CASCADE"),
         primary_key=True
-    )    
-            
+    )
+
+
 class UsuarioEstilos(Base):
     __tablename__ = "usuario_estilos"
 
     id_usuario = Column(
         Integer,
-        ForeignKey("usuarios.id_usuario"),
+        ForeignKey("usuarios.id_usuario", ondelete="CASCADE"),
         primary_key=True
-    )    
-            
+    )
+
     id_estilos = Column(
         Integer,
-        ForeignKey("usuarios.id_estilos"),
+        ForeignKey("estilos.id_estilos", ondelete="CASCADE"),
         primary_key=True
-    )    
-            
+    )
