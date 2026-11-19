@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from typing import List
 # Importar la conexión con la base de datos
 from app.database import obtener_conexion
+
 # Importar las funciones de publicaciones
 from app.red_social.publicaciones import (
     listar_publicaciones,
@@ -12,14 +13,9 @@ from app.red_social.publicaciones import (
     actualizar_publicacion,
     eliminar_publicacion
 )
-# Importar las funciones de interacciones
-from app.red_social.interacciones import (
-    listar_comentarios,
-    crear_comentario,
-    actualizar_comentario,
-    eliminar_comentario
-)
 
+
+# Importar las funciones de interacciones
 from app.red_social.interacciones import (
     listar_comentarios,
     crear_comentario,
@@ -30,12 +26,20 @@ from app.red_social.interacciones import (
     agregar_favorito,
     quitar_favorito,
     compartir_publicacion
-)
+)   
 
 
 # Importar las funciones de publicaciones
 from app.red_social.multimedia import listar_multimedia, guardar_multimedia
 
+# Importar las funciones de seguidores
+from app.red_social.seguidores import (
+    seguir_usuario,
+    dejar_de_seguir,
+    listar_seguidores,
+    listar_seguidos,
+    comprobar_seguimiento
+)
 
 # Crear la aplicación
 app = FastAPI(
@@ -248,5 +252,55 @@ def eliminar_favorito(id_publicacion: int, id_usuario: int):
 def registrar_compartido(id_publicacion: int, id_usuario: int):
 
     resultado = compartir_publicacion(id_publicacion, id_usuario)
+
+    return resultado
+
+
+
+
+
+# AQUI TODO LO DE SEGUIDORES
+
+# SEGUIR A UN USUARIO
+@app.post("/usuarios/{id_seguidor}/seguir/{id_seguido}")
+def registrar_seguimiento(id_seguidor: int, id_seguido: int):
+
+    resultado = seguir_usuario(id_seguidor, id_seguido)
+
+    return resultado
+
+
+# DEJAR DE SEGUIR A UN USUARIO
+@app.delete("/usuarios/{id_seguidor}/seguir/{id_seguido}")
+def eliminar_seguimiento(id_seguidor: int, id_seguido: int):
+
+    resultado = dejar_de_seguir(id_seguidor, id_seguido)
+
+    return resultado
+
+
+# CONSULTAR LOS SEGUIDORES DE UN USUARIO
+@app.get("/usuarios/{id_usuario}/seguidores")
+def consultar_seguidores(id_usuario: int):
+
+    resultado = listar_seguidores(id_usuario)
+
+    return resultado
+
+
+# CONSULTAR A QUIEN SIGUE UN USUARIO
+@app.get("/usuarios/{id_usuario}/seguidos")
+def consultar_seguidos(id_usuario: int):
+
+    resultado = listar_seguidos(id_usuario)
+
+    return resultado
+
+
+# COMPROBAR SI UN USUARIO SIGUE A OTRO
+@app.get("/usuarios/{id_seguidor}/sigue/{id_seguido}")
+def consultar_seguimiento(id_seguidor: int, id_seguido: int):
+
+    resultado = comprobar_seguimiento(id_seguidor, id_seguido)
 
     return resultado
