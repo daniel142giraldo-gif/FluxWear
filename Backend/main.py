@@ -1,14 +1,30 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
 from Chat_Administracion import mensajes
+from Chat_Administracion.programador import (
+    iniciar_programador,
+    detener_programador
+)
 from database.connection import get_db
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+
+    iniciar_programador()
+
+    yield
+
+    detener_programador()
 
 app = FastAPI(
     title="FluxWear API",
     description="Backend de la red social FluxWear",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # Registrar módulos

@@ -7,10 +7,12 @@ from database.connection import get_db
 from Chat_Administracion.modelos import (
     Mensaje, 
     Usuario,
-    MensajeUsuario
+    MensajeUsuario,
+    HistorialEdicionesMensajes
 )
 from Chat_Administracion.schemas.mensaje import (
     MensajeCrear,
+    MensajeEditar,
     MensajeRespuesta
 )
 
@@ -683,4 +685,112 @@ def restaurar_mensaje_para_todos(
         "mensaje": "Mensaje restaurado para todos correctamente",
         "id_mensaje": id_mensaje,
         "id_emisor": id_usuario,
+    }
+
+@router.patch("/{id_mensaje}/editar/{id_usuario}")
+def editar_mensaje(
+    id_mensaje: int,
+    id_usuario: int,
+    datos: MensajeEditar,
+    db: Session = Depends(get_db)
+):
+
+    mensaje = db.query(Mensaje).filter(
+        Mensaje.id_mensaje == id_mensaje
+    ).first()
+
+    if not mensaje:
+        raise HTTPException(
+            status_code=404,
+            detail="Mensaje no encontrado"
+        )
+
+    if mensaje.id_emisor != id_usuario:
+        raise HTTPException(
+            status_code=403,
+            detail="Solo el emisor puede editar el mensaje"
+        )
+
+    if mensaje.eliminado_para_todos:
+        raise HTTPException(
+            status_code=400,
+            detail="No puedes esditar un mensaje eliminado para todos"
+        )
+
+    ahora = datetime.now()
+
+    if ahora > mensaje.fecha + timedelta(hours=1):
+        raise HTTPException(
+            status_code=400,
+            detail="El tiempo permitido para editar este mensaje ha expirado"
+        )
+
+    historial = db.query(HistorialEdicionesMensajes).filter(
+        HistorialEdicionesMensajes.id_mensaje == id_mensaje
+    ).order_by(
+        HistorialEdicionesMensajes.fecha_edicion.asc()
+    ).all()
+
+    registro = HistorialEdicionesMensajes(
+        id_mensaje=id_mensaje,
+        texto_anterior=mensaje.texto
+    )
+
+    db.add(registro)
+
+    if len(historial) >= 3:
+        db.delete(historial[0])
+
+    mensaje.texto = datos.texto.strip()
+    mensaje.fecha_edicion = ahora
+
+    db.commit()
+    db.refresh(mensaje)
+
+    return {
+        "mensaje": "Mensaje editado correctamente",
+        "datos": MensajeRespuesta.model_validate(mensaje)
+    }
+
+@router.get("/{id_mensaje}/historial-ediciones/{id_usuario}")
+def obtener_historial_ediciones(
+    id_mensaje: int,
+    id_usuario: int,
+    db: Session = Depends(get_db)
+):
+
+    mensaje = db.query(Mensaje).filter(
+        Mensaje.id_mensaje == id_mensaje
+    ).first()
+
+    if not mensaje:
+        raise HTTPException(
+            status_code=404,
+            detail="Mensaje no encontrado"
+        )
+
+    if id_usuario not in [mensaje.id_emisor, mensaje.id_receptor]:
+        raise HTTPException(
+            status_code=403,
+            detail="No tienes permiso para consultar este historial"
+        )
+
+    historial = db.query(HistorialEdicionesMensajes).filter(
+        HistorialEdicionesMensajes.id_mensaje == id_mensaje
+    ).order_by(
+        HistorialEdicionesMensajes.fecha_edicion.desc(),
+        HistorialEdicionesMensajes.id_historial.desc()
+    ).all()
+
+    return { 
+        "id_mensaje": id_mensaje,
+        "total_ediciones": len(historial),
+        "historial": [
+            {
+                "id_historial": registro.id_historial,
+                "texto_anterior": registro.texto_anterior,
+                "fecha_edicion": registro.fecha_edicion
+            }
+            for registro in historial
+        ]
     }

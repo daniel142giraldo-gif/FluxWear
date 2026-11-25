@@ -22,3 +22,6 @@ class MensajeRespuesta(BaseModel):
     fecha_limite_recuperacion: datetime | None = None
     fecha_entregado: datetime | None = None
     fecha_leido: datetime | None = None
+
+class MensajeEditar(BaseModel):
+    texto: str = Field(min_length=1)
